@@ -1,0 +1,1668 @@
+---
+components:
+  responses: {}
+  schemas:
+    ApiSendContentContentRequest:
+      properties:
+        content:
+          description: Content
+          example: Hello, World!
+          type: string
+          x-struct:
+          x-validate:
+        type:
+          description: Type
+          example: text/plain
+          type: string
+          x-struct:
+          x-validate:
+      title: ApiSendContentContentRequest
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Content.ApiSendContent.ApiSendContentContentRequest
+      x-validate:
+    ApiSendContentPaymentDetails:
+      properties:
+        amount:
+          description: Amount
+          example: 100.0
+          type: number
+          x-struct:
+          x-validate:
+        currency:
+          description: Currency
+          example: EUR
+          type: string
+          x-struct:
+          x-validate:
+        description:
+          description: Description
+          example: Payment for services
+          type: string
+          x-struct:
+          x-validate:
+        due_date:
+          description: Due Date
+          example: 2021-12-31
+          type: string
+          x-struct:
+          x-validate:
+        iban:
+          description: IBAN
+          example: DE89370400440532013000
+          type: string
+          x-struct:
+          x-validate:
+        reference:
+          description: Reference
+          example: '123456789'
+          type: string
+          x-struct:
+          x-validate:
+      title: ApiSendContentPaymentDetails
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Content.ApiSendContent.ApiSendContentPaymentDetails
+      x-validate:
+    ApiSendContentPaymentInfo:
+      properties:
+        details:
+          $ref: '#/components/schemas/ApiSendContentPaymentDetails'
+        payable:
+          description: Payable
+          example: true
+          type: boolean
+          x-struct:
+          x-validate:
+      title: ApiSendContentPaymentInfo
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Content.ApiSendContent.ApiSendContentPaymentInfo
+      x-validate:
+    ApiSendContentReceiverBirthInformation:
+      properties:
+        birth_name:
+          description: Birth Name
+          example: Smith
+          type: string
+          x-struct:
+          x-validate:
+        date_of_birth:
+          description: Date of Birth
+          example: 1990-01-01
+          type: string
+          x-struct:
+          x-validate:
+        given_names:
+          description: Given Name(s)
+          example: John William
+          type: string
+          x-struct:
+          x-validate:
+        last_name:
+          description: Last Name
+          example: Doe
+          type: string
+          x-struct:
+          x-validate:
+        nationality:
+          description: Nationality
+          example: Germany
+          type: string
+          x-struct:
+          x-validate:
+        place_of_birth:
+          description: Place of Birth
+          example: Berlin
+          type: string
+          x-struct:
+          x-validate:
+      title: ApiSendContentReceiverBirthInformation
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Content.ApiSendContent.ApiSendContentReceiverBirthInformation
+      x-validate:
+    ApiSendContentReceiverRequest:
+      properties:
+        account_id:
+          description: Account ID
+          example: '123456789'
+          type: string
+          x-struct:
+          x-validate:
+        birth_information:
+          $ref: '#/components/schemas/ApiSendContentReceiverBirthInformation'
+        date_of_birth:
+          description: Date of Birth
+          example: 1990-01-01
+          type: string
+          x-struct:
+          x-validate:
+        email:
+          description: Email Address
+          example: john.doe@example.com
+          type: string
+          x-struct:
+          x-validate:
+        first_name:
+          description: First Name
+          example: John
+          type: string
+          x-struct:
+          x-validate:
+        full_name:
+          description: Full Name
+          example: John Doe
+          type: string
+          x-struct:
+          x-validate:
+        last_name:
+          description: Last Name
+          example: Doe
+          type: string
+          x-struct:
+          x-validate:
+        ssn:
+          description: Social Security Number
+          example: 123-45-6789
+          type: string
+          x-struct:
+          x-validate:
+        tel:
+          description: Phone Number
+          example: +49 123-456-7890
+          type: string
+          x-struct:
+          x-validate:
+        vat_id:
+          description: VAT ID
+          example: DE123456789
+          type: string
+          x-struct:
+          x-validate:
+      title: ApiSendContentReceiverRequest
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Content.ApiSendContent.ApiSendContentReceiverRequest
+      x-validate:
+    ApiSendContentSendContentRequest:
+      properties:
+        body:
+          description: Content
+          example:
+            - content: PDF Content
+              type: application/pdf
+          items:
+            $ref: '#/components/schemas/ApiSendContentContentRequest'
+          type: array
+          x-struct:
+          x-validate:
+        delivery_certificate:
+          default: none
+          description: Send Delivery Certificate, none - no delivery certificate, aes - Advanced Electronic Seal
+          enum:
+            - none
+            - aes
+          example: none
+          type: string
+          x-struct:
+          x-validate:
+        payment_info:
+          $ref: '#/components/schemas/ApiSendContentPaymentInfo'
+        signature_info:
+          $ref: '#/components/schemas/ApiSendContentSignatureInfo'
+        subject:
+          description: Subject
+          example: Important Document
+          type: string
+          x-struct:
+          x-validate:
+        to:
+          $ref: '#/components/schemas/ApiSendContentReceiverRequest'
+        type:
+          description: The type of the mail, it enables content specific actions.
+          enum:
+            - letter
+            - invoice
+            - contract
+          example: letter
+          type: string
+          x-struct:
+          x-validate:
+      title: ApiSendContentSendContentRequest
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Content.ApiSendContent.ApiSendContentSendContentRequest
+      x-validate:
+    ApiSendContentSignatureInfo:
+      properties:
+        requesting_signer:
+          description: Requesting Signer
+          items:
+            properties:
+              field:
+                description: Field
+                example: Signature Field
+                type: string
+                x-struct:
+                x-validate:
+              signer:
+                description: Which party shall sign the field
+                enum:
+                  - sender
+                  - receiver
+                type: string
+                x-struct:
+                x-validate:
+            type: object
+            x-struct:
+            x-validate:
+          type: array
+          x-struct:
+          x-validate:
+        signature_reference:
+          description: Signature Reference
+          example: '123456789'
+          type: string
+          x-struct:
+          x-validate:
+      title: ApiSendContentSignatureInfo
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Content.ApiSendContent.ApiSendContentSignatureInfo
+      x-validate:
+    BasicAccountInfoResponse:
+      properties:
+        company_name:
+          description: The company name of the account
+          type: string
+          x-struct:
+          x-validate:
+        first_name:
+          description: The first name of the account holder. It contains all first names.
+          type: string
+          x-struct:
+          x-validate:
+        last_name:
+          description: The last name of the account holder
+          type: string
+          x-struct:
+          x-validate:
+        middle_name:
+          description: The middle name of the account holder, usually empty
+          type: string
+          x-struct:
+          x-validate:
+        type:
+          description: The type of the account. private, business
+          type: string
+          x-struct:
+          x-validate:
+      title: BasicAccountInfoResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Accounts.BasicAccountInfoResponse
+      x-validate:
+    Content:
+      properties:
+        content:
+          type: string
+          x-struct:
+          x-validate:
+        content_type:
+          type: string
+          x-struct:
+          x-validate:
+      required:
+        - content
+      title: Content
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Content.ContentGetResponse.Content
+      x-validate:
+    ContentCreateResponse:
+      properties:
+        id:
+          type: string
+          x-struct:
+          x-validate:
+      title: ContentCreateResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Content.ContentCreateResponse
+      x-validate:
+    ContentGetActionsApiResponse:
+      properties:
+        payments:
+          properties:
+            details:
+              properties:
+                amount:
+                  description: the amount to pay in the smallest unit of the currency
+                  type: number
+                  x-struct:
+                  x-validate:
+                currency:
+                  description: the currency of the payment
+                  type: string
+                  x-struct:
+                  x-validate:
+                iban:
+                  description: the iban of the payment
+                  type: string
+                  x-struct:
+                  x-validate:
+                market:
+                  description: the market of the payment. Important for the payment provider, e.g. Tink
+                  type: string
+                  x-struct:
+                  x-validate:
+                reference:
+                  description: the reference of the payment
+                  type: string
+                  x-struct:
+                  x-validate:
+                tink_payment_id:
+                  description: the payment id in the Tink system
+                  type: string
+                  x-struct:
+                  x-validate:
+              type: object
+              x-struct:
+              x-validate:
+            link:
+              type: string
+              x-struct:
+              x-validate:
+          type: object
+          x-struct:
+          x-validate:
+        signatures:
+          properties:
+            document_signatures:
+              properties:
+                signature_ids:
+                  description: array of signature ids
+                  format: json
+                  type: string
+                  x-struct:
+                  x-validate:
+                signature_reference:
+                  type: string
+                  x-struct:
+                  x-validate:
+              type: object
+              x-struct:
+              x-validate:
+            embedded_signatures:
+              items:
+                properties:
+                  created_by:
+                    type: string
+                    x-struct:
+                    x-validate:
+                  created_date:
+                    format: ISO 8601
+                    type: string
+                    x-struct:
+                    x-validate:
+                  document_signature_id:
+                    type: string
+                    x-struct:
+                    x-validate:
+                  due_date:
+                    format: ISO 8601
+                    type: string
+                    x-struct:
+                    x-validate:
+                  field_name:
+                    type: string
+                    x-struct:
+                    x-validate:
+                  history:
+                    type: string
+                    x-struct:
+                    x-validate:
+                  purpose:
+                    description: the purpose why the signature is needed. Important if a document requires multiple signatures from the same signer
+                    type: string
+                    x-struct:
+                    x-validate:
+                  request_date:
+                    format: ISO 8601
+                    type: string
+                    x-struct:
+                    x-validate:
+                  requested_to:
+                    type: string
+                    x-struct:
+                    x-validate:
+                  signature_date:
+                    type: string
+                    x-struct:
+                    x-validate:
+                  signed_by:
+                    type: string
+                    x-struct:
+                    x-validate:
+                  signed_for:
+                    type: string
+                    x-struct:
+                    x-validate:
+                  value:
+                    format: xml
+                    type: string
+                    x-struct:
+                    x-validate:
+                type: object
+                x-struct:
+                x-validate:
+              type: array
+              x-struct:
+              x-validate:
+            signature_reference:
+              properties:
+                document_signatures:
+                  type: string
+                  x-struct:
+                  x-validate:
+                managed_by:
+                  type: string
+                  x-struct:
+                  x-validate:
+                signature_fields:
+                  type: string
+                  x-struct:
+                  x-validate:
+              type: object
+              x-struct:
+              x-validate:
+          type: object
+          x-struct:
+          x-validate:
+      title: ContentGetActionsApiResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Content.ContentGetActionsApiResponse
+      x-validate:
+    ContentGetDeliveryCertificateResponse:
+      properties:
+        certificate:
+          description: The delivery certificate in XML format.
+          format: xml
+          type: string
+          x-struct:
+          x-validate:
+        meta:
+          properties:
+            document_id:
+              description: The ID of the document for which the delivery certificate is requested.
+              example: 53C9084932FA27B068424A5FCA81974873E54BC88AAB3B5CCB45C4E6E2C90BB1
+              type: string
+              x-struct:
+              x-validate:
+            id:
+              description: The ID of the delivery certificate.
+              example: f65ce63e-fcd4-45a5-8984-a1064fe30f63
+              type: string
+              x-struct:
+              x-validate:
+            type:
+              description: The type of the delivery certificate. aes - advanced electronic seal.
+              enum:
+                - aes
+              type: string
+              x-struct:
+              x-validate:
+          type: object
+          x-struct:
+          x-validate:
+      required:
+        - content
+      title: ContentGetDeliveryCertificateResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Content.ContentGetDeliveryCertificateResponse
+      x-validate:
+    ContentGetResponse:
+      properties:
+        content:
+          items:
+            $ref: '#/components/schemas/Content'
+          type: array
+          x-struct:
+          x-validate:
+        meta:
+          $ref: '#/components/schemas/Meta'
+      title: ContentGetResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Content.ContentGetResponse
+      x-validate:
+    CreateSignatureReferenceRequest:
+      properties:
+        fields:
+          description: The fields defining the signature reference
+          items:
+            properties:
+              name:
+                description: The name of the field
+                type: string
+                x-struct:
+                x-validate:
+              purpose:
+                description: The purpose of the field
+                type: string
+                x-struct:
+                x-validate:
+              role:
+                description: The role of the signer of the field
+                type: string
+                x-struct:
+                x-validate:
+            required:
+              - name
+            type: object
+            x-struct:
+            x-validate:
+          type: array
+          x-struct:
+          x-validate:
+      title: CreateSignatureReferenceRequest
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Content.CreateSignatureReferenceRequest
+      x-validate:
+    ErrorResponse:
+      properties:
+        code:
+          type: number
+          x-struct:
+          x-validate:
+        message:
+          type: string
+          x-struct:
+          x-validate:
+        status:
+          type: number
+          x-struct:
+          x-validate:
+      required:
+        - to
+        - content
+      title: ErrorResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Error.ErrorResponse
+      x-validate:
+    ErrorResponse40102:
+      properties:
+        code:
+          example: 40102
+          type: number
+          x-struct:
+          x-validate:
+        message:
+          example: No access to tenant
+          type: string
+          x-struct:
+          x-validate:
+        status:
+          example: 401
+          type: number
+          x-struct:
+          x-validate:
+      title: ErrorResponse40102
+      type: object
+      x-struct:
+      x-validate:
+    ErrorResponse40103:
+      properties:
+        code:
+          example: 40103
+          type: number
+          x-struct:
+          x-validate:
+        message:
+          example: access not granted
+          type: string
+          x-struct:
+          x-validate:
+        status:
+          example: 401
+          type: number
+          x-struct:
+          x-validate:
+      title: ErrorResponse40103
+      type: object
+      x-struct:
+      x-validate:
+    ErrorResponse40400:
+      properties:
+        code:
+          example: 40400
+          type: number
+          x-struct:
+          x-validate:
+        message:
+          example: not found
+          type: string
+          x-struct:
+          x-validate:
+        status:
+          example: 404
+          type: number
+          x-struct:
+          x-validate:
+      title: ErrorResponse40400
+      type: object
+      x-struct:
+      x-validate:
+    ErrorResponse40401:
+      properties:
+        code:
+          example: 40401
+          type: number
+          x-struct:
+          x-validate:
+        message:
+          example: receiver not found
+          type: string
+          x-struct:
+          x-validate:
+        status:
+          example: 404
+          type: number
+          x-struct:
+          x-validate:
+      title: ErrorResponse40401
+      type: object
+      x-struct:
+      x-validate:
+    ErrorResponse42203:
+      properties:
+        code:
+          example: 42203
+          type: number
+          x-struct:
+          x-validate:
+        message:
+          example: invalid iban
+          type: string
+          x-struct:
+          x-validate:
+        status:
+          example: 422
+          type: number
+          x-struct:
+          x-validate:
+      title: ErrorResponse42203
+      type: object
+      x-struct:
+      x-validate:
+    Item:
+      properties:
+        delivered:
+          type: boolean
+          x-struct:
+          x-validate:
+        delivered_date:
+          format: ISO 8601
+          type: string
+          x-struct:
+          x-validate:
+        read:
+          type: boolean
+          x-struct:
+          x-validate:
+        read_date:
+          format: ISO 8601
+          type: string
+          x-struct:
+          x-validate:
+        receiver:
+          type: string
+          x-struct:
+          x-validate:
+        sender:
+          type: string
+          x-struct:
+          x-validate:
+        sent_date:
+          format: ISO 8601
+          type: string
+          x-struct:
+          x-validate:
+        size:
+          type: number
+          x-struct:
+          x-validate:
+        title:
+          type: string
+          x-struct:
+          x-validate:
+        type:
+          type: string
+          x-struct:
+          x-validate:
+      title: Item
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Mailbox.MyMailboxResponse.Item
+      x-validate:
+    LoginApiKeyRequest:
+      properties:
+        key:
+          description: The api key to use for authentication
+          type: string
+          x-struct:
+          x-validate:
+        secret:
+          description: The secret of the api key
+          type: string
+          x-struct:
+          x-validate:
+      title: LoginApiKeyRequest
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Auth.LoginApiKeyRequest
+      x-validate:
+    LoginResponse:
+      properties:
+        access_token:
+          type: string
+          x-struct:
+          x-validate:
+        created_at:
+          format: ISO 8601
+          type: string
+          x-struct:
+          x-validate:
+        expires_in:
+          type: number
+          x-struct:
+          x-validate:
+        refresh_token:
+          type: string
+          x-struct:
+          x-validate:
+        scope:
+          type: string
+          x-struct:
+          x-validate:
+        token_type:
+          type: string
+          x-struct:
+          x-validate:
+      required:
+        - to
+        - content
+      title: LoginResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Auth.Login.LoginResponse
+      x-validate:
+    Meta:
+      properties:
+        delivered:
+          example: true
+          type: boolean
+          x-struct:
+          x-validate:
+        delivered_date:
+          example: 2024-04-29T20:25:43.606150Z
+          format: ISO 8601
+          type: string
+          x-struct:
+          x-validate:
+        read:
+          example: true
+          type: boolean
+          x-struct:
+          x-validate:
+        read_date:
+          example: 2024-04-29T20:25:50.475815Z
+          format: ISO 8601
+          type: string
+          x-struct:
+          x-validate:
+        receiver:
+          example: '2802510314782548'
+          type: string
+          x-struct:
+          x-validate:
+        receiver_state:
+          description: The state of the receiver, it is only return if the user is the receiver of the message
+          enum:
+            - unread
+            - read
+            - archived
+            - trashed
+            - registering
+            - deleted
+            - pending
+          example: unread
+          type: string
+          x-struct:
+          x-validate:
+        sender:
+          example: c00d790d-b4ec-4908-a52d-6eba3d53953c
+          type: string
+          x-struct:
+          x-validate:
+        sender_state:
+          description: The state of the sender, it is only return if the user is the sender of the message
+          enum:
+            - active
+            - archived
+            - trashed
+            - deleted
+            - pending
+          example: active
+          type: string
+          x-struct:
+          x-validate:
+        sent_date:
+          example: 2024-04-29T20:25:43.606150Z
+          format: ISO 8601
+          type: string
+          x-struct:
+          x-validate:
+        size:
+          example: 123765
+          type: number
+          x-struct:
+          x-validate:
+        subject:
+          example: Test Betreff
+          type: string
+          x-struct:
+          x-validate:
+        type:
+          example: letter
+          type: string
+          x-struct:
+          x-validate:
+      title: Meta
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Content.ContentGetResponse.Meta
+      x-validate:
+    MyMailboxRequest:
+      properties:
+        filter:
+          description: The filter to apply to the search
+          type: object
+          x-struct:
+          x-validate:
+        page:
+          description: The page number to get
+          type: number
+          x-struct:
+          x-validate:
+      title: MyMailboxRequest
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Mailbox.MyMailboxRequest
+      x-validate:
+    MyMailboxResponse:
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/Item'
+          type: array
+          x-struct:
+          x-validate:
+        total:
+          type: number
+          x-struct:
+          x-validate:
+      required:
+        - to
+        - content
+      title: MyMailboxResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Mailbox.MyMailboxResponse
+      x-validate:
+    MyOutboxRequest:
+      properties:
+        filter:
+          description: The filter to apply to the search
+          type: object
+          x-struct:
+          x-validate:
+        page:
+          description: The page number to get
+          type: number
+          x-struct:
+          x-validate:
+        sender_user:
+          description: The user id or api key of the sender. By default the logged in user is used.
+          type: string
+          x-struct:
+          x-validate:
+      title: MyOutboxRequest
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Mailbox.MyOutboxRequest
+      x-validate:
+    ReceiverExistResponse:
+      properties:
+        type:
+          type: string
+          x-struct:
+          x-validate:
+      title: ReceiverExistResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Receiver.ReceiverExistResponse
+      x-validate:
+    RevokeTokenRequest:
+      properties:
+        token:
+          description: The access token to revoke
+          example: eyJraWQiOiJrZXkiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+          type: string
+          x-struct:
+          x-validate:
+      required:
+        - token
+      title: RevokeTokenRequest
+      type: object
+      x-struct: Elixir.Web.Doc.Requests.Auth.RevokeTokenRequest
+      x-validate:
+    SignatureReference:
+      properties:
+        document_signatures:
+          description: The document signatures
+          format: json
+          type: string
+          x-struct:
+          x-validate:
+        id:
+          type: string
+          x-struct:
+          x-validate:
+        managed_by:
+          description: The tenant ID
+          type: string
+          x-struct:
+          x-validate:
+        signature_fields:
+          description: The fields defining the signature reference
+          format: json
+          type: string
+          x-struct:
+          x-validate:
+      title: SignatureReference
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Content.SignatureReference
+      x-validate:
+    TenantListResponse:
+      properties:
+        tenants:
+          items:
+            $ref: '#/components/schemas/TenantResponse'
+          type: array
+          x-struct:
+          x-validate:
+        total:
+          type: number
+          x-struct:
+          x-validate:
+      title: TenantListResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Tenant.TenantListResponse
+      x-validate:
+    TenantResponse:
+      properties:
+        account_id:
+          type: string
+          x-struct:
+          x-validate:
+        id:
+          type: string
+          x-struct:
+          x-validate:
+        image:
+          type: string
+          x-struct:
+          x-validate:
+        name:
+          type: string
+          x-struct:
+          x-validate:
+        private:
+          type: boolean
+          x-struct:
+          x-validate:
+      title: TenantResponse
+      type: object
+      x-struct: Elixir.Web.Doc.Responses.Tenant.TenantResponse
+      x-validate:
+  securitySchemes:
+    bearer_auth:
+      scheme: bearer
+      type: http
+info:
+  description: |
+    ## Introduction
+    
+    This documentation is intended for developers who want to interact directly with the Brifle system.
+    
+    Brifle follows national German laws. In case of international deliveries you are responsible for compliance with the law.
+    
+    ## Terminology
+    
+    ### Account
+    
+    An account is associated with a legal person or company. There are two main types of account: personal and business.
+    
+    ### User
+    
+    A user is required to authorise and log into the system. Each user has at least one account. Corporate accounts can have multiple users.
+    
+    ### Tenant
+    
+    A tenant is defined as a sender. Each personal account is associated with one private tenant, while each business account is associated with at least one public tenant. It is possible for an account to be associated with multiple tenants, which is useful for companies that have different departments, each of which may send different types of documents, such as HR and Sales.
+    
+    ## Limitations
+    
+    The maximum request size is currently 3MB.
+    
+    ## Conventions
+    
+    ### Dates
+    
+    All dates are returned in UTC time zone in iso8601 format.
+    
+    iso8601 format: `yyyy-mm-ddThh:mm:ss.sZ`.
+    
+    
+    ## Error Codes
+    
+    | Code   | Status | Message                 |
+    | ------ | ------ | ----------------------- |
+    | 40000  | 400    | bad request             |
+    | 40100  | 401    | unauthorized            |
+    | 40101  | 401    | login Failed            |
+    | 40102  | 401    | No access to tenant     |
+    | 40103  | 401    | access not granted      |
+    | 40105  | 401    | Not Access to Account   |
+    | 40300  | 403    | forbidden               |
+    | 40400  | 404    | not found               |
+    | 40401  | 404    | receiver not found      |
+    | 40402  | 404    | tenant not found        |
+    | 40403  | 404    | account not found       |
+    | 40405  | 404    | document not found      |
+    | 42200  | 422    | unprocessable entity    |
+    | 42201  | 422    | content type not supported |
+    | 42202  | 422    | document has wrong encoding |
+    | 42203  | 422    | invalid iban            |
+    | 50000  | 500    | internal error          |
+    
+    
+    
+        
+    
+    ## Authorization API
+    
+    In order to operate with the system you need to authorize with the system. For authentication we use oauth2. The account owner needs to setup an api key and generate an api secret. As ventor you can add the x-vendor header to mark that the process was initiated by you.
+  title: Brifle
+  version: v1.0
+openapi: 3.0.0
+paths:
+  /v1/accounts/{id}:
+    get:
+      callbacks: {}
+      operationId: Web.Api.Controller.AccountsController.get_basic_info
+      parameters:
+        - description: The account ID
+          example: '6934298084364066'
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            x-struct:
+            x-validate:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicAccountInfoResponse'
+          description: LoggedInUserIdentifiers
+      security:
+        - bearer_auth: []
+      summary: Get Basic Info
+      tags:
+        - Accounts
+  /v1/auth/login:
+    post:
+      callbacks: {}
+      operationId: Web.Api.Controller.AuthController.create
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginApiKeyRequest'
+        description: Login params
+        required: false
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+          description: Login response
+        401:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Login failed
+      summary: Login
+      tags:
+        - Authentication
+  /v1/auth/logout:
+    post:
+      callbacks: {}
+      operationId: Web.Api.Controller.AuthController.revoke
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevokeTokenRequest'
+        description: Revoke params
+        required: false
+      responses:
+        200:
+          content:
+            application/json: {}
+          description: Logout response
+      summary: Logout
+      tags:
+        - Authentication
+  /v1/content/document/{id}:
+    get:
+      callbacks: {}
+      description: |-
+        Please note that for security reasons, not all fields are returns. As a sender you won't have access to receiver_state, and as receiver no access to the sender_state.
+            
+         read is set to true once, the document was opened for the first time either by the mobile or webclient or via the API using the read flag. Once it is set to true it cannot be set to false.
+      operationId: Web.Api.Controller.ContentController.get
+      parameters:
+        - description: document ID
+          example: b0440b80-0857-43e9-8f13-723c8eb6a39c
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            x-struct:
+            x-validate:
+        - description: Set to true if you want to mark the document as read
+          example: 'true'
+          in: query
+          name: read
+          required: false
+          schema:
+            type: boolean
+            x-struct:
+            x-validate:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentGetResponse'
+          description: Content response
+        401:
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    example: 40103
+                    type: number
+                    x-struct:
+                    x-validate:
+                  message:
+                    example: access not granted
+                    type: string
+                    x-struct:
+                    x-validate:
+                  status:
+                    example: 401
+                    type: number
+                    x-struct:
+                    x-validate:
+                title: ErrorResponse40103
+                type: object
+                x-struct:
+                x-validate:
+          description: Unauthorized
+        404:
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    example: 40400
+                    type: number
+                    x-struct:
+                    x-validate:
+                  message:
+                    example: not found
+                    type: string
+                    x-struct:
+                    x-validate:
+                  status:
+                    example: 404
+                    type: number
+                    x-struct:
+                    x-validate:
+                title: ErrorResponse40400
+                type: object
+                x-struct:
+                x-validate:
+          description: Not found
+      security:
+        - bearer_auth: []
+      summary: Get content
+      tags:
+        - Content
+  /v1/content/document/{id}/actions:
+    get:
+      callbacks: {}
+      operationId: Web.Api.Controller.ContentController.get_actions
+      parameters:
+        - description: document ID
+          example: b0440b80-0857-43e9-8f13-723c8eb6a39c
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            x-struct:
+            x-validate:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentGetActionsApiResponse'
+          description: Content response
+      security:
+        - bearer_auth: []
+      summary: Get Actions
+      tags:
+        - Content
+  /v1/content/document/{id}/delivery_certificate:
+    get:
+      callbacks: {}
+      description: Gets the delivery certificate for a document.
+      operationId: Web.Api.Controller.ContentController.get_delivery_certificate
+      parameters:
+        - description: document ID
+          example: b0440b80-0857-43e9-8f13-723c8eb6a39c
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            x-struct:
+            x-validate:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentGetDeliveryCertificateResponse'
+          description: Receiver response
+        404:
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    example: 40400
+                    type: number
+                    x-struct:
+                    x-validate:
+                  message:
+                    example: not found
+                    type: string
+                    x-struct:
+                    x-validate:
+                  status:
+                    example: 404
+                    type: number
+                    x-struct:
+                    x-validate:
+                title: ErrorResponse40400
+                type: object
+                x-struct:
+                x-validate:
+          description: Not found
+      security:
+        - bearer_auth: []
+      summary: Get Delivery Certificate
+      tags:
+        - Content
+  /v1/content/receiver/check:
+    post:
+      callbacks: {}
+      description: Checks if a user is in the system
+      operationId: Web.Api.Controller.ContentController.check_receiver
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiSendContentReceiverRequest'
+        description: Receiver params
+        required: false
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiverExistResponse'
+          description: Receiver response
+        404:
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    example: 40401
+                    type: number
+                    x-struct:
+                    x-validate:
+                  message:
+                    example: receiver not found
+                    type: string
+                    x-struct:
+                    x-validate:
+                  status:
+                    example: 404
+                    type: number
+                    x-struct:
+                    x-validate:
+                title: ErrorResponse40401
+                type: object
+                x-struct:
+                x-validate:
+          description: Not found
+      security:
+        - bearer_auth: []
+      summary: Checks receiver
+      tags:
+        - Content
+  /v1/content/send/{tenant}:
+    post:
+      callbacks: {}
+      description: Send content to a receiver. It can return the Error Code 42201 if the content type is not valid, 40401 if the receiver is not found, 42203 if the IBAN is invalid.
+      operationId: Web.Api.Controller.ContentController.send
+      parameters:
+        - description: Tenent/Sender ID
+          example: b0440b80-0857-43e9-8f13-723c8eb6a39c
+          in: path
+          name: tenant
+          required: true
+          schema:
+            type: string
+            x-struct:
+            x-validate:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiSendContentSendContentRequest'
+        description: Content params
+        required: false
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentCreateResponse'
+          description: Create Content response
+        401:
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    example: 40102
+                    type: number
+                    x-struct:
+                    x-validate:
+                  message:
+                    example: No access to tenant
+                    type: string
+                    x-struct:
+                    x-validate:
+                  status:
+                    example: 401
+                    type: number
+                    x-struct:
+                    x-validate:
+                title: ErrorResponse40102
+                type: object
+                x-struct:
+                x-validate:
+          description: Unauthorized
+        404:
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    example: 40401
+                    type: number
+                    x-struct:
+                    x-validate:
+                  message:
+                    example: receiver not found
+                    type: string
+                    x-struct:
+                    x-validate:
+                  status:
+                    example: 404
+                    type: number
+                    x-struct:
+                    x-validate:
+                title: ErrorResponse40401
+                type: object
+                x-struct:
+                x-validate:
+          description: Not found
+        422:
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    example: 42203
+                    type: number
+                    x-struct:
+                    x-validate:
+                  message:
+                    example: invalid iban
+                    type: string
+                    x-struct:
+                    x-validate:
+                  status:
+                    example: 422
+                    type: number
+                    x-struct:
+                    x-validate:
+                title: ErrorResponse42203
+                type: object
+                x-struct:
+                x-validate:
+          description: Invalid IBAN
+      security:
+        - bearer_auth: []
+      summary: Send content
+      tags:
+        - Content
+  /v1/mailbox/inbox:
+    post:
+      callbacks: {}
+      operationId: Web.Api.Controller.MailboxController.get_my_inbox
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyMailboxRequest'
+        description: Content params
+        required: false
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyMailboxResponse'
+          description: Content response
+      security:
+        - bearer_auth: []
+      summary: Get My Inbox
+      tags:
+        - Mailbox
+  /v1/mailbox/outbox/{tenant}:
+    post:
+      callbacks: {}
+      operationId: Web.Api.Controller.MailboxController.get_my_outbox
+      parameters:
+        - description: Tenent/Sender ID
+          example: b0440b80-0857-43e9-8f13-723c8eb6a39c
+          in: path
+          name: tenant
+          required: true
+          schema:
+            type: string
+            x-struct:
+            x-validate:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyOutboxRequest'
+        description: Content params
+        required: false
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyMailboxResponse'
+          description: Content response
+      security:
+        - bearer_auth: []
+      summary: Get My Outbox
+      tags:
+        - Mailbox
+  /v1/signature/{signature_id}/export/{format}:
+    get:
+      callbacks: {}
+      operationId: Web.Api.Controller.SignatureController.export_signature
+      parameters:
+        - description: The signature ID
+          example: b0440b80-0857-43e9-8f13-723c8eb6a39c
+          in: path
+          name: signature_id
+          required: true
+          schema:
+            type: string
+            x-struct:
+            x-validate:
+        - description: The format of the export
+          in: path
+          name: format
+          required: true
+          schema:
+            description: The format to export the signature
+            enum:
+              - xml
+            example: xml
+            type: string
+            x-struct:
+            x-validate:
+      responses:
+        200:
+          content:
+            application/xml: {}
+          description: Signature export
+      security:
+        - bearer_auth: []
+      summary: Export signature
+      tags:
+        - Signatures
+  /v1/signature/{tenant_id}/reference:
+    post:
+      callbacks: {}
+      operationId: Web.Api.Controller.SignatureController.create_signature_reference
+      parameters:
+        - description: The tenant ID
+          example: b0440b80-0857-43e9-8f13-723c8eb6a39c
+          in: path
+          name: tenant_id
+          required: true
+          schema:
+            type: string
+            x-struct:
+            x-validate:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSignatureReferenceRequest'
+        description: Signature reference params
+        required: false
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignatureReference'
+          description: Signature reference response
+      security:
+        - bearer_auth: []
+      summary: Create a signature reference
+      tags:
+        - Signatures
+  /v1/tenants/id/{id}:
+    get:
+      callbacks: {}
+      operationId: Web.Api.Controller.TenantController.get_tenant
+      parameters:
+        - description: The tenant ID
+          example: b0440b80-0857-43e9-8f13-723c8eb6a39c
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            x-struct:
+            x-validate:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantResponse'
+          description: Tenant response
+      security:
+        - bearer_auth: []
+      summary: Get Tenant
+      tags:
+        - Tenants
+  /v1/tenants/my:
+    get:
+      callbacks: {}
+      operationId: Web.Api.Controller.TenantController.get_own
+      parameters: []
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantListResponse'
+          description: Content response
+      security:
+        - bearer_auth: []
+      summary: Get my tenants
+      tags:
+        - Tenants
+security: []
+servers:
+  - description: The Sandbox Environment for testing and development purposes
+    url: https://sandbox-api.brifle.de
+  - description: The Production Environment
+    url: https://api.brifle.de
+tags: []

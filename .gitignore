@@ -1,0 +1,8 @@
+.env
+.env.test
+build
+
+__debug_*
+
+go.sum
+

@@ -114,6 +114,12 @@ components:
           type: string
           x-struct:
           x-validate:
+        postal_address:
+          description: Postal Address - Will be compared with the official postal address. It allows minimal variations
+          example: 71032 Böblingen, Hauptstraße 13
+          type: string
+          x-struct:
+          x-validate:
       title: ApiSendContentReceiverBirthInformation
       type: object
       x-struct: Elixir.Web.Doc.Requests.Content.ApiSendContent.ApiSendContentReceiverBirthInformation
@@ -927,8 +933,21 @@ components:
       x-validate:
     ReceiverExistResponse:
       properties:
-        type:
-          type: string
+        receiver:
+          properties:
+            type:
+              description: 'The type of the receiver information: i.e. email, phone, or birth_info'
+              enum:
+                - email
+                - phone
+                - birth_info
+                - post_department
+                - address_book
+              example: birth_info
+              type: string
+              x-struct:
+              x-validate:
+          type: object
           x-struct:
           x-validate:
       title: ReceiverExistResponse

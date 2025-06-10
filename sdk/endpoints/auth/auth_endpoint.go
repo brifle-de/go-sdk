@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"errors"
 
 	"github.com/brifle-de/brifle-sdk/sdk/api"
 	sdkClient "github.com/brifle-de/brifle-sdk/sdk/client"
@@ -15,18 +14,8 @@ func Login(client *sdkClient.BrifleClient, context context.Context, apiKey strin
 		Secret: &apiSecret,
 	}
 	response, err := client.ApiClient.WebApiControllerAuthControllerCreate(context, loginRequest)
-	if err != nil {
-		return nil, nil, err
-	}
-	if response == nil {
-		return nil, nil, errors.New("login response is nil")
-	}
-	// parse body into LoginResponse
-	if response.Body == nil {
-		return nil, nil, errors.New("login response body is nil")
-	}
 	var res LoginResponse
-	status, err := api.ParseResponse(response, &res)
+	status, err := api.ValidateHttpResponse(err, response, &res)
 	if err != nil {
 		return nil, nil, err
 	}

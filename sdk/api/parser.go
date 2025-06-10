@@ -6,7 +6,22 @@ import (
 	"net/http"
 )
 
-func ParseResponse(response *http.Response, responseType any) (*ResponseStatus, error) {
+// ResponseStatus validate the response and parse the response body
+func ValidateHttpResponse(err error, response *http.Response, responseType any) (*ResponseStatus, error) {
+	if err != nil {
+		return nil, err
+	}
+	if response == nil {
+		return nil, errors.New("response is nil")
+	}
+	// parse body into LoginResponse
+	if response.Body == nil {
+		return nil, errors.New("response body is nil")
+	}
+	return parseResponse(response, responseType)
+}
+
+func parseResponse(response *http.Response, responseType any) (*ResponseStatus, error) {
 	if response == nil {
 		return nil, errors.New("response is nil")
 	}

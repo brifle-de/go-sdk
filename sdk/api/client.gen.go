@@ -64,6 +64,15 @@ const (
 	MetaSenderStateTrashed  MetaSenderState = "trashed"
 )
 
+// Defines values for ReceiverExistResponseReceiverType.
+const (
+	AddressBook    ReceiverExistResponseReceiverType = "address_book"
+	BirthInfo      ReceiverExistResponseReceiverType = "birth_info"
+	Email          ReceiverExistResponseReceiverType = "email"
+	Phone          ReceiverExistResponseReceiverType = "phone"
+	PostDepartment ReceiverExistResponseReceiverType = "post_department"
+)
+
 // Defines values for WebApiControllerSignatureControllerExportSignatureParamsFormat.
 const (
 	Xml WebApiControllerSignatureControllerExportSignatureParamsFormat = "xml"
@@ -126,6 +135,9 @@ type ApiSendContentReceiverBirthInformation struct {
 
 	// PlaceOfBirth Place of Birth
 	PlaceOfBirth *string `json:"place_of_birth,omitempty"`
+
+	// PostalAddress Postal Address - Will be compared with the official postal address. It allows minimal variations
+	PostalAddress *string `json:"postal_address,omitempty"`
 }
 
 // ApiSendContentReceiverRequest defines model for ApiSendContentReceiverRequest.
@@ -420,8 +432,14 @@ type MyOutboxRequest struct {
 
 // ReceiverExistResponse defines model for ReceiverExistResponse.
 type ReceiverExistResponse struct {
-	Type *string `json:"type,omitempty"`
+	Receiver *struct {
+		// Type The type of the receiver information: i.e. email, phone, or birth_info
+		Type *ReceiverExistResponseReceiverType `json:"type,omitempty"`
+	} `json:"receiver,omitempty"`
 }
+
+// ReceiverExistResponseReceiverType The type of the receiver information: i.e. email, phone, or birth_info
+type ReceiverExistResponseReceiverType string
 
 // RevokeTokenRequest defines model for RevokeTokenRequest.
 type RevokeTokenRequest struct {

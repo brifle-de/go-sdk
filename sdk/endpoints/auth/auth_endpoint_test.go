@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/brifle-de/brifle-sdk/sdk"
-	"github.com/brifle-de/brifle-sdk/sdk/endpoints/auth.go"
+	"github.com/brifle-de/brifle-sdk/sdk/endpoints/auth"
 	"github.com/brifle-de/brifle-sdk/sdk/middleware"
 	"github.com/joho/godotenv"
 )

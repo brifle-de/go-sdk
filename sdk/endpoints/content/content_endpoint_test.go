@@ -8,10 +8,28 @@ import (
 	"time"
 
 	"github.com/brifle-de/brifle-sdk/sdk"
+	"github.com/brifle-de/brifle-sdk/sdk/client"
 	"github.com/brifle-de/brifle-sdk/sdk/endpoints/content"
 	"github.com/brifle-de/brifle-sdk/sdk/middleware"
 	"github.com/joho/godotenv"
 )
+
+func getClient(t *testing.T) *client.BrifleClient {
+	// Load .env file
+	loadEnv(t)
+
+	// get env variables for credentials
+	credentials := middleware.Credentials{
+		ApiKey:    os.Getenv("API_KEY"),
+		ApiSecret: os.Getenv("API_SECRET"),
+	}
+	brifleClient, err := sdk.NewClient(os.Getenv("ENDPOINT"), credentials)
+	if err != nil {
+		t.Errorf("Failed to create Brifle client: %v", err)
+		return nil
+	}
+	return brifleClient
+}
 
 func loadEnv(t *testing.T) {
 	// Load .env file
@@ -22,19 +40,55 @@ func loadEnv(t *testing.T) {
 	}
 }
 
-func TestReceiverExists(t *testing.T) {
-	// Load .env file
-	loadEnv(t)
-	// get env variables for credentials
-	credentials := middleware.Credentials{
-		ApiKey:    os.Getenv("API_KEY"),
-		ApiSecret: os.Getenv("API_SECRET"),
-	}
-	brifleClient, err := sdk.NewClient("https://internaltest-api.brifle.de", credentials)
+func TestDeliveryCertificate(t *testing.T) {
+	brifleClient := getClient(t)
+	documentId := os.Getenv("TEST_DOC_ID_CERTIFICATE")
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	deliveryResponse, status, err := content.GetDeliveryCertificate(brifleClient, ctx, &documentId)
 	if err != nil {
-		t.Errorf("Failed to create Brifle client: %v", err)
+		t.Errorf("GetDeliveryCertificate failed: %v", err)
 		return
 	}
+	if status.HttpStatus != 200 {
+		t.Errorf("Expected status code 200, got %d", status.HttpStatus)
+		return
+	}
+	if deliveryResponse == nil {
+		t.Error("GetDeliveryCertificate response is nil")
+		return
+	}
+}
+
+func TestGetDocumentActions(t *testing.T) {
+	brifleClient := getClient(t)
+
+	documentId := os.Getenv("TEST_DOC_ID_ACTIONS")
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	// Test GetDocumentActions
+	actions, status, err := content.GetContentAction(brifleClient, ctx, &documentId)
+
+	if err != nil {
+		t.Errorf("GetDocumentActions failed: %v", err)
+		return
+	}
+	if status.HttpStatus != 200 {
+		t.Errorf("Expected status code 200, got %d", status.HttpStatus)
+		return
+	}
+	if actions == nil {
+		t.Error("GetDocumentActions response is nil")
+		return
+	}
+
+}
+
+func TestReceiverExists(t *testing.T) {
+
+	brifleClient := getClient(t)
+
 	firstName := os.Getenv("TEST_RECEIVER_FIRST_NAME")
 	lastName := os.Getenv("TEST_RECEIVER_LAST_NAME")
 	dateOfBirth := os.Getenv("TEST_RECEIVER_DATE_OF_BIRTH")
@@ -71,17 +125,8 @@ func TestReceiverExists(t *testing.T) {
 
 func TestSendContent(t *testing.T) {
 
-	loadEnv(t)
+	brifleClient := getClient(t)
 
-	credentials := middleware.Credentials{
-		ApiKey:    os.Getenv("API_KEY"),
-		ApiSecret: os.Getenv("API_SECRET"),
-	}
-	brifleClient, err := sdk.NewClient("https://internaltest-api.brifle.de", credentials)
-	if err != nil {
-		t.Errorf("Failed to create Brifle client: %v", err)
-		return
-	}
 	firstName := os.Getenv("TEST_RECEIVER_FIRST_NAME")
 	lastName := os.Getenv("TEST_RECEIVER_LAST_NAME")
 	dateOfBirth := os.Getenv("TEST_RECEIVER_DATE_OF_BIRTH")
@@ -141,20 +186,7 @@ func TestSendContent(t *testing.T) {
 }
 
 func TestGetDocument(t *testing.T) {
-	// Load .env file
-	loadEnv(t)
-
-	// get env variables for credentials
-
-	credentials := middleware.Credentials{
-		ApiKey:    os.Getenv("API_KEY"),
-		ApiSecret: os.Getenv("API_SECRET"),
-	}
-	brifleClient, err := sdk.NewClient("https://internaltest-api.brifle.de", credentials)
-	if err != nil {
-		t.Errorf("Failed to create Brifle client: %v", err)
-		return
-	}
+	brifleClient := getClient(t)
 
 	documentId := "53C9084932FA27B068424A5FCA81974873E54BC88AAB3B5CCB45C4E6E2C90BB1"
 	readFlag := false

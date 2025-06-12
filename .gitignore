@@ -6,3 +6,7 @@ __debug_*
 
 go.sum
 
+# the mock can contain private information. Ignore those until a test account is created
+test/mock 
+test/mock/mappings/*login*
+test/mock/__files/*login*

@@ -279,6 +279,7 @@ type ContentGetActionsApiResponse struct {
 			DueDate             *string `json:"due_date,omitempty"`
 			FieldName           *string `json:"field_name,omitempty"`
 			History             *string `json:"history,omitempty"`
+			Id                  *string `json:"id,omitempty"`
 
 			// Purpose the purpose why the signature is needed. Important if a document requires multiple signatures from the same signer
 			Purpose       *string `json:"purpose,omitempty"`
@@ -346,16 +347,29 @@ type ErrorResponse struct {
 
 // Item defines model for Item.
 type Item struct {
-	Delivered     *bool    `json:"delivered,omitempty"`
-	DeliveredDate *string  `json:"delivered_date,omitempty"`
-	Read          *bool    `json:"read,omitempty"`
-	ReadDate      *string  `json:"read_date,omitempty"`
-	Receiver      *string  `json:"receiver,omitempty"`
-	Sender        *string  `json:"sender,omitempty"`
-	SentDate      *string  `json:"sent_date,omitempty"`
-	Size          *float32 `json:"size,omitempty"`
-	Title         *string  `json:"title,omitempty"`
-	Type          *string  `json:"type,omitempty"`
+	Delivered     *bool   `json:"delivered,omitempty"`
+	DeliveredDate *string `json:"delivered_date,omitempty"`
+	Id            *string `json:"id,omitempty"`
+
+	// Payable whether the document has a payment link
+	Payable  *bool   `json:"payable,omitempty"`
+	Read     *bool   `json:"read,omitempty"`
+	ReadDate *string `json:"read_date,omitempty"`
+	Receiver *string `json:"receiver,omitempty"`
+
+	// ReferenceNumber the reference of the document
+	ReferenceNumber *string `json:"reference_number,omitempty"`
+	Sender          *string `json:"sender,omitempty"`
+	SentDate        *string `json:"sent_date,omitempty"`
+
+	// SignatureReference the signature reference of the document
+	SignatureReference *string  `json:"signature_reference,omitempty"`
+	Size               *float32 `json:"size,omitempty"`
+
+	// SubMailbox the sub mailbox where the document is stored
+	SubMailbox *string `json:"sub_mailbox,omitempty"`
+	Subject    *string `json:"subject,omitempty"`
+	Type       *string `json:"type,omitempty"`
 }
 
 // LoginApiKeyRequest defines model for LoginApiKeyRequest.

@@ -419,6 +419,10 @@ components:
                     type: string
                     x-struct:
                     x-validate:
+                  id:
+                    type: string
+                    x-struct:
+                    x-validate:
                   purpose:
                     description: the purpose why the signature is needed. Important if a document requires multiple signatures from the same signer
                     type: string
@@ -702,6 +706,16 @@ components:
           type: string
           x-struct:
           x-validate:
+        id:
+          format: string
+          type: string
+          x-struct:
+          x-validate:
+        payable:
+          description: whether the document has a payment link
+          type: boolean
+          x-struct:
+          x-validate:
         read:
           type: boolean
           x-struct:
@@ -715,6 +729,11 @@ components:
           type: string
           x-struct:
           x-validate:
+        reference_number:
+          description: the reference of the document
+          type: string
+          x-struct:
+          x-validate:
         sender:
           type: string
           x-struct:
@@ -724,11 +743,21 @@ components:
           type: string
           x-struct:
           x-validate:
+        signature_reference:
+          description: the signature reference of the document
+          type: string
+          x-struct:
+          x-validate:
         size:
           type: number
           x-struct:
           x-validate:
-        title:
+        sub_mailbox:
+          description: the sub mailbox where the document is stored
+          type: string
+          x-struct:
+          x-validate:
+        subject:
           type: string
           x-struct:
           x-validate:

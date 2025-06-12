@@ -32,7 +32,10 @@ func TestAuth(t *testing.T) {
 		ApiKey:    os.Getenv("API_KEY"),
 		ApiSecret: os.Getenv("API_SECRET"),
 	}
-	brifleClient, err := sdk.NewClient("https://internaltest-api.brifle.de", credentials)
+
+	brifleClient, err := sdk.NewClientWithOpts(os.Getenv("ENDPOINT"), credentials, &sdk.ClientOps{
+		SkipTlsVerification: true,
+	})
 	if err != nil {
 		t.Errorf("Failed to create Brifle client: %v", err)
 		return

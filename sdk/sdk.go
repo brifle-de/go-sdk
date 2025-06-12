@@ -2,6 +2,7 @@ package sdk
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/base64"
 	"errors"
 	"net/http"
@@ -12,8 +13,28 @@ import (
 	"github.com/brifle-de/brifle-sdk/sdk/middleware"
 )
 
+type ClientOps struct {
+	SkipTlsVerification bool // skip TLS verification for the client
+}
+
+func NewClientWithOpts(server string, credentials middleware.Credentials, opts *ClientOps) (*apiClient.BrifleClient, error) {
+	if opts == nil {
+		opts = &ClientOps{SkipTlsVerification: false} // default value
+	}
+	return newClient(server, credentials, opts)
+}
+
 func NewClient(server string, credentials middleware.Credentials) (*apiClient.BrifleClient, error) {
+	return newClient(server, credentials, nil)
+}
+
+func newClient(server string, credentials middleware.Credentials, opts *ClientOps) (*apiClient.BrifleClient, error) {
 	client, err := api.NewClient(server)
+	var skipTlsVerification bool
+	if opts != nil {
+		skipTlsVerification = opts.SkipTlsVerification
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -25,6 +46,11 @@ func NewClient(server string, credentials middleware.Credentials) (*apiClient.Br
 	// add middleware to http client
 	client.Client = &http.Client{
 		Transport: &middleware.AuthTransport{
+			BaseTransport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: skipTlsVerification,
+				},
+			},
 			State: middleware.BrifleClientState{
 				AuthInterval:      3600, // 1 hour in seconds
 				LastAuthenticated: 0,    // initial value

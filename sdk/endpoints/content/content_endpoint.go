@@ -2,6 +2,7 @@ package content
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"github.com/brifle-de/brifle-sdk/sdk/api"
@@ -114,6 +115,103 @@ func GetContent(client *sdkClient.BrifleClient, context context.Context, documen
 		return nil, nil, err
 	}
 	return &res, status, nil
+}
+
+// GetContentAction retrieves the actions available for a document by its ID. If readFlag is set to true, it marks the document as read.
+func GetContentAction(client *sdkClient.BrifleClient, context context.Context, documentId *string) (*ContentActions, *api.ResponseStatus, error) {
+	response, err := client.ApiClient.WebApiControllerContentControllerGetActions(context, *documentId)
+	var res ContentActions
+	status, err := api.ValidateHttpResponse(err, response, &res)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &res, status, nil
+}
+
+// GetDeliveryCertificate retrieves the delivery certificate for a document by its ID.
+func GetDeliveryCertificate(client *sdkClient.BrifleClient, context context.Context, documentId *string) (*DeliveryCertificate, *api.ResponseStatus, error) {
+	if documentId == nil || *documentId == "" {
+		return nil, nil, errors.New("document ID is required")
+	}
+
+	response, err := client.ApiClient.WebApiControllerContentControllerGetDeliveryCertificate(context, *documentId)
+	var res DeliveryCertificate
+	status, err := api.ValidateHttpResponse(err, response, &res)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &res, status, nil
+}
+
+// GetDeliveryCertificate retrieves the delivery certificate for a document by its ID.
+type DeliveryCertificate struct {
+	// Certificate The delivery certificate in XML format.
+	Certificate *string `json:"certificate,omitempty"`
+	Meta        *struct {
+		// DocumentId The ID of the document for which the delivery certificate is requested.
+		DocumentId *string `json:"document_id,omitempty"`
+
+		// Id The ID of the delivery certificate.
+		Id *string `json:"id,omitempty"`
+
+		// Type The type of the delivery certificate. aes - advanced electronic seal.
+		Type *string `json:"type,omitempty"`
+	} `json:"meta,omitempty"`
+}
+
+type ContentActions struct {
+	Payments *struct {
+		Details *struct {
+			// Amount the amount to pay in the smallest unit of the currency
+			Amount *float32 `json:"amount,omitempty"`
+
+			// Currency the currency of the payment
+			Currency *string `json:"currency,omitempty"`
+
+			// Iban the iban of the payment
+			Iban *string `json:"iban,omitempty"`
+
+			// Market the market of the payment. Important for the payment provider, e.g. Tink
+			Market *string `json:"market,omitempty"`
+
+			// Reference the reference of the payment
+			Reference *string `json:"reference,omitempty"`
+
+			// TinkPaymentId the payment id in the Tink system
+			TinkPaymentId *string `json:"tink_payment_id,omitempty"`
+		} `json:"details,omitempty"`
+		Link *string `json:"link,omitempty"`
+	} `json:"payments,omitempty"`
+	Signatures *struct {
+		DocumentSignatures *struct {
+			// SignatureIds array of signature ids
+			SignatureIds       json.RawMessage `json:"signature_ids,omitempty"`
+			SignatureReference *string         `json:"signature_reference,omitempty"`
+		} `json:"document_signatures,omitempty"`
+		EmbeddedSignatures *[]struct {
+			Id                  *string `json:"id,omitempty"`
+			CreatedBy           *string `json:"created_by,omitempty"`
+			CreatedDate         *string `json:"created_date,omitempty"`
+			DocumentSignatureId *string `json:"document_signature_id,omitempty"`
+			DueDate             *string `json:"due_date,omitempty"`
+			FieldName           *string `json:"field_name,omitempty"`
+			History             *string `json:"history,omitempty"`
+
+			// Purpose the purpose why the signature is needed. Important if a document requires multiple signatures from the same signer
+			Purpose       *string `json:"purpose,omitempty"`
+			RequestDate   *string `json:"request_date,omitempty"`
+			RequestedTo   *string `json:"requested_to,omitempty"`
+			SignatureDate *string `json:"signature_date,omitempty"`
+			SignedBy      *string `json:"signed_by,omitempty"`
+			SignedFor     *string `json:"signed_for,omitempty"`
+			Value         *string `json:"value,omitempty"`
+		} `json:"embedded_signatures,omitempty"`
+		SignatureReference *struct {
+			DocumentSignatures *string `json:"document_signatures,omitempty"`
+			ManagedBy          *string `json:"managed_by,omitempty"`
+			SignatureFields    *string `json:"signature_fields,omitempty"`
+		} `json:"signature_reference,omitempty"`
+	} `json:"signatures,omitempty"`
 }
 
 // Types

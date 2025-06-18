@@ -2,6 +2,22 @@
 
 This go client allows to interact with the Brifle API via an sdk. The sdk is handling the renewing of the access token automatically. If the api only returns json strings it also converts those json string to go structs.
 
+# Installation
+To install the Brifle API Client, add the following line to your `go.mod` file:
+
+```go
+replace github.com/brifle-de/brifle-sdk => github.com/brifle-de/go-sdk v0.0.1
+
+require github.com/brifle-de/brifle-sdk v0.0.1
+```
+
+Then run:
+
+```bash
+go get ./...
+```
+
+
 # Test
 
 To run the test, we use a mock server. You either need mock data or valid credentials providing it via the .env.test file.

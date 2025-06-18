@@ -60,8 +60,15 @@ func newClient(server string, credentials middleware.Credentials, opts *ClientOp
 			AllowTokenRenewal: true, // allow token renewal
 			RenewToken: func() (string, error) {
 				res, status, err := auth.Login(brifle_client, context.TODO(), credentials.ApiKey, credentials.ApiSecret)
-				if err != nil && status.HttpStatus != http.StatusOK {
+				if err != nil {
+					if status != nil && status.HttpStatus != http.StatusOK {
+						return "", errors.New("failed to retrieve access token")
+					}
 					return "", err
+				}
+
+				if res == nil || res.AccessToken == nil {
+					return "", errors.New("failed to retrieve access token")
 				}
 				return *res.AccessToken, nil
 			},

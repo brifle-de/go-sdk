@@ -145,10 +145,6 @@ func TestSendContent(t *testing.T) {
 	}
 	// convert file content to base64
 	fileContentBase64 := sdk.Base64Encode(fileContent)
-	if err != nil {
-		t.Errorf("Failed to encode file content to base64: %v", err)
-		return
-	}
 
 	document1 := content.ContentItem{
 		Content: fileContentBase64,

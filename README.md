@@ -1,4 +1,8 @@
-# Startup a Mock Server
+# Brifle API Client
+
+This go client allows to interact with the Brifle API via an sdk. The sdk is handling the renewing of the access token automatically. If the api only returns json strings it also converts those json string to go structs.
+
+# Test
 
 To run the test, we use a mock server. You either need mock data or valid credentials providing it via the .env.test file.
 

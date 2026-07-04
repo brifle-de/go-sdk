@@ -58,6 +58,46 @@ func ParseResponseAsString(response *http.Response) (*ResponseStatus, string, er
 	}, bodyString, nil
 }
 
+// ParseResponseAsBytes reads the raw response body as bytes. It is used for
+// binary responses such as PDF documents (e.g. paper mail previews and cover
+// letters). On non-2xx responses it decodes the error body into a ResponseStatus
+// and returns nil bytes.
+func ParseResponseAsBytes(response *http.Response) (*ResponseStatus, []byte, error) {
+	if response == nil {
+		return nil, nil, errors.New("response is nil")
+	}
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		var errResponse ResponseError
+		if response.Body != nil {
+			err := json.NewDecoder(response.Body).Decode(&errResponse)
+			if err != nil {
+				return nil, nil, err
+			}
+			return &ResponseStatus{
+				ErrorCode:  errResponse.Code,
+				HttpStatus: response.StatusCode,
+			}, nil, nil
+		}
+
+		return &ResponseStatus{
+			ErrorCode:  response.StatusCode,
+			HttpStatus: response.StatusCode,
+		}, nil, nil
+	}
+	var body []byte
+	if response.Body != nil {
+		bodyBytes, err := io.ReadAll(response.Body)
+		if err != nil {
+			return nil, nil, err
+		}
+		body = bodyBytes
+	}
+	return &ResponseStatus{
+		ErrorCode:  0,
+		HttpStatus: response.StatusCode,
+	}, body, nil
+}
+
 func parseResponse(response *http.Response, responseType any) (*ResponseStatus, error) {
 	if response == nil {
 		return nil, errors.New("response is nil")

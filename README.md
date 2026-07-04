@@ -2,6 +2,34 @@
 
 This go client allows to interact with the Brifle API via an sdk. The sdk is handling the renewing of the access token automatically. If the api only returns json strings it also converts those json string to go structs.
 
+# Documentation
+
+Full usage documentation with runnable examples for every endpoint lives in the [`docs/`](docs/README.md) directory:
+
+- [Getting started & client setup](docs/README.md)
+- [Status](docs/status.md) · [Authentication](docs/auth.md) · [Accounts](docs/accounts.md) · [Tenants](docs/tenants.md)
+- [Content](docs/content.md) · [Cover Letters](docs/cover-letters.md) · [Mailbox](docs/mailbox.md)
+- [Signatures](docs/signatures.md) · [Wallet](docs/wallet.md) · [Address](docs/address.md)
+
+## Quick start
+
+```go
+credentials := middleware.Credentials{
+	ApiKey:    "your-api-key",
+	ApiSecret: "your-api-secret",
+}
+
+client, err := sdk.NewClient("https://sandbox-api.brifle.de", credentials)
+if err != nil {
+	panic(err)
+}
+
+ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+defer cancel()
+
+res, status, err := status.GetStatus(client, ctx)
+```
+
 # Installation
 To install the Brifle API Client, add the following line to your `go.mod` file:
 

@@ -9,6 +9,22 @@ import (
 	sdkClient "github.com/brifle-de/brifle-sdk/sdk/client"
 )
 
+// strVal safely dereferences a *string, returning "" when nil.
+func strVal(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+// f32Val safely dereferences a *float32, returning 0 when nil.
+func f32Val(f *float32) float32 {
+	if f == nil {
+		return 0
+	}
+	return *f
+}
+
 func buildReceiver(receiver *ReceiverData) *api.ApiSendContentReceiverRequest {
 	if receiver == nil {
 		return nil
@@ -17,10 +33,10 @@ func buildReceiver(receiver *ReceiverData) *api.ApiSendContentReceiverRequest {
 	if receiver.BirthInformation != nil {
 		return &api.ApiSendContentReceiverRequest{
 			BirthInformation: &api.ApiSendContentReceiverBirthInformation{
-				GivenNames:    receiver.BirthInformation.FirstName,
-				LastName:      receiver.BirthInformation.LastName,
-				PlaceOfBirth:  receiver.BirthInformation.PlaceOfBirth,
-				DateOfBirth:   receiver.BirthInformation.DateOfBirth,
+				GivenNames:    strVal(receiver.BirthInformation.FirstName),
+				LastName:      strVal(receiver.BirthInformation.LastName),
+				PlaceOfBirth:  strVal(receiver.BirthInformation.PlaceOfBirth),
+				DateOfBirth:   strVal(receiver.BirthInformation.DateOfBirth),
 				PostalAddress: receiver.BirthInformation.PostalAddress,
 				BirthName:     receiver.BirthInformation.NameAtBirth,
 			},
@@ -46,7 +62,29 @@ func buildReceiver(receiver *ReceiverData) *api.ApiSendContentReceiverRequest {
 	return nil
 }
 
-// SendContent sends a document to the specified receiver with the provided content and metadata.
+// SendContent sends a document to the specified receiver with the provided
+// content and metadata, on behalf of the given tenant.
+//
+//	req := content.SendContentRequest{
+//		To: &content.ReceiverData{
+//			Email: &content.EmailReceiver{
+//				Email: sdk.String("max@example.com"),
+//				Name:  sdk.String("Max Mustermann"),
+//			},
+//		},
+//		Type:    sdk.String(content.Letter),
+//		Subject: sdk.String("Welcome to Brifle"),
+//		Body: &[]content.ContentItem{
+//			{Content: sdk.Base64Encode(pdfBytes), Type: sdk.String("application/pdf")},
+//		},
+//	}
+//	res, respStatus, err := content.SendContent(client, ctx, &tenant, &req)
+//	if err == nil && respStatus.HttpStatus == 200 {
+//		fmt.Println("document id:", *res.Id)
+//	}
+//
+// See [ReceiverData] for the ways to address a recipient, and the [Letter],
+// [Invoice] and [Contract] constants for the document type.
 func SendContent(client *sdkClient.BrifleClient, context context.Context, tenant *string, sendContent *SendContentRequest) (*SendDocumentResponse, *api.ResponseStatus, error) {
 	if sendContent == nil {
 		return nil, nil, errors.New("send content request is nil")
@@ -61,15 +99,21 @@ func SendContent(client *sdkClient.BrifleClient, context context.Context, tenant
 	for i, item := range *sendContent.Body {
 		convertedBody[i] = api.ApiSendContentContentRequest{
 			Content: item.Content,
-			Type:    item.Type,
+			Type:    (*api.ApiSendContentContentRequestType)(item.Type),
 		}
 	}
 
+	var contentType api.ApiSendContentSendContentRequestType
+	if sendContent.Type != nil {
+		contentType = api.ApiSendContentSendContentRequestType(*sendContent.Type)
+	}
+
 	request := &api.ApiSendContentSendContentRequest{
-		To:            receiver,
-		Type:          (*api.ApiSendContentSendContentRequestType)(sendContent.Type),
-		Body:          &convertedBody,
-		Subject:       sendContent.Subject,
+		To:            *receiver,
+		Type:          contentType,
+		Body:          convertedBody,
+		Subject:       strVal(sendContent.Subject),
+		Fallback:      sendContent.Fallback.ToApiFallback(),
 		PaymentInfo:   sendContent.PaymentInfo.ToApiPaymentInfo(),
 		SignatureInfo: sendContent.SignatureInfo.ToApiSignatureInfo(),
 	}
@@ -260,6 +304,94 @@ type SendContentRequest struct {
 	Subject       *string        `json:"subject,omitempty"`
 	PaymentInfo   *PaymentInfo   `json:"payment_info,omitempty"`
 	SignatureInfo *SignatureInfo `json:"signature_info,omitempty"`
+	Fallback      *Fallback      `json:"fallback,omitempty"`
+}
+
+type Fallback struct {
+	// EnabledPhysicalDelivery Enable Physical Delivery
+	EnabledPhysicalDelivery bool       `json:"enabled_physical_delivery,omitempty"`
+	PaperMail               *PaperMail `json:"paper_mail,omitempty"`
+}
+
+// ToApiFallback converts the Fallback to an ApiSendContentFallback
+func (f *Fallback) ToApiFallback() *api.ApiSendContentFallback {
+	if f == nil {
+		return nil
+	}
+
+	enabled := f.EnabledPhysicalDelivery
+
+	if f.PaperMail == nil || f.PaperMail.Recipient == nil {
+		return &api.ApiSendContentFallback{
+			EnabledPhysicalDelivery: &enabled,
+		}
+	}
+
+	r := f.PaperMail.Recipient
+	return &api.ApiSendContentFallback{
+		EnabledPhysicalDelivery: &enabled,
+		PaperMail: &struct {
+			Recipient *struct {
+				// AddressLine1 Address Line 1
+				AddressLine1 string `json:"address_line1"`
+
+				// AddressLine2 Address Line 2
+				AddressLine2 *string `json:"address_line2,omitempty"`
+
+				// AddressLine3 Address Line 3
+				AddressLine3 *string `json:"address_line3,omitempty"`
+
+				// City City
+				City string `json:"city"`
+
+				// Country Country, the country code in ISO 3166-1 alpha-2 format
+				Country *string `json:"country,omitempty"`
+
+				// PostalCode ZIP Code
+				PostalCode string `json:"postal_code"`
+			} `json:"recipient,omitempty"`
+		}{
+			Recipient: &struct {
+				// AddressLine1 Address Line 1
+				AddressLine1 string `json:"address_line1"`
+
+				// AddressLine2 Address Line 2
+				AddressLine2 *string `json:"address_line2,omitempty"`
+
+				// AddressLine3 Address Line 3
+				AddressLine3 *string `json:"address_line3,omitempty"`
+
+				// City City
+				City string `json:"city"`
+
+				// Country Country, the country code in ISO 3166-1 alpha-2 format
+				Country *string `json:"country,omitempty"`
+
+				// PostalCode ZIP Code
+				PostalCode string `json:"postal_code"`
+			}{
+				AddressLine1: strVal(r.AddressLine1),
+				AddressLine2: r.AddressLine2,
+				AddressLine3: r.AddressLine3,
+				City:         strVal(r.City),
+				Country:      r.Country,
+				PostalCode:   strVal(r.PostalCode),
+			},
+		},
+	}
+}
+
+type PaperMail struct {
+	Recipient *Recipient `json:"recipient,omitempty"`
+}
+
+type Recipient struct {
+	AddressLine1 *string `json:"address_line1,omitempty"`
+	AddressLine2 *string `json:"address_line2,omitempty"`
+	AddressLine3 *string `json:"address_line3,omitempty"`
+	City         *string `json:"city,omitempty"`
+	Country      *string `json:"country,omitempty"`
+	PostalCode   *string `json:"postal_code,omitempty"`
 }
 
 type ContentItem struct {
@@ -321,17 +453,26 @@ func (reqSigner *SignatureInfo) ToApiSignatureInfo() *api.ApiSendContentSignatur
 		return nil
 	}
 	convertedRequestingSigner := make([]struct {
-		Field  *string                                                `json:"field,omitempty"`
-		Signer *api.ApiSendContentSignatureInfoRequestingSignerSigner `json:"signer,omitempty"`
+		// Field Field
+		Field string `json:"field"`
+
+		// Signer Which party shall sign the field
+		Signer api.ApiSendContentSignatureInfoRequestingSignerSigner `json:"signer"`
 	}, len(*reqSigner.RequestingSigner))
 	for i, item := range *reqSigner.RequestingSigner {
-		signer := api.ApiSendContentSignatureInfoRequestingSignerSigner(*item.Signer)
+		var signer api.ApiSendContentSignatureInfoRequestingSignerSigner
+		if item.Signer != nil {
+			signer = api.ApiSendContentSignatureInfoRequestingSignerSigner(*item.Signer)
+		}
 		convertedRequestingSigner[i] = struct {
-			Field  *string                                                `json:"field,omitempty"`
-			Signer *api.ApiSendContentSignatureInfoRequestingSignerSigner `json:"signer,omitempty"`
+			// Field Field
+			Field string `json:"field"`
+
+			// Signer Which party shall sign the field
+			Signer api.ApiSendContentSignatureInfoRequestingSignerSigner `json:"signer"`
 		}{
-			Field:  item.Field,
-			Signer: &signer,
+			Field:  strVal(item.Field),
+			Signer: signer,
 		}
 	}
 	return &api.ApiSendContentSignatureInfo{
@@ -351,12 +492,12 @@ func (paymentInfo *PaymentInfo) ToApiPaymentInfo() *api.ApiSendContentPaymentInf
 	}
 	return &api.ApiSendContentPaymentInfo{
 		Details: &api.ApiSendContentPaymentDetails{
-			Amount:      paymentInfo.Details.Amount,
-			Currency:    paymentInfo.Details.Currency,
-			Description: paymentInfo.Details.Description,
-			DueDate:     paymentInfo.Details.DueDate,
-			Iban:        paymentInfo.Details.Iban,
-			Reference:   paymentInfo.Details.Reference,
+			Amount:      f32Val(paymentInfo.Details.Amount),
+			Currency:    strVal(paymentInfo.Details.Currency),
+			Description: strVal(paymentInfo.Details.Description),
+			DueDate:     strVal(paymentInfo.Details.DueDate),
+			Iban:        strVal(paymentInfo.Details.Iban),
+			Reference:   strVal(paymentInfo.Details.Reference),
 		},
 		Payable: paymentInfo.Payable,
 	}

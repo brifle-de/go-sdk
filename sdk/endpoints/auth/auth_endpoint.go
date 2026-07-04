@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 
 	"github.com/brifle-de/brifle-sdk/sdk/api"
 	sdkClient "github.com/brifle-de/brifle-sdk/sdk/client"
@@ -20,6 +21,25 @@ func Login(client *sdkClient.BrifleClient, context context.Context, apiKey strin
 		return nil, nil, err
 	}
 	return &res, status, nil
+}
+
+// Logout revokes the given access token so it can no longer be used. Note that
+// the SDK manages tokens automatically; use this only if you need to explicitly
+// invalidate a token you obtained yourself.
+func Logout(client *sdkClient.BrifleClient, ctx context.Context, token *string) (*api.ResponseStatus, error) {
+	if token == nil || *token == "" {
+		return nil, errors.New("token is required")
+	}
+	request := api.RevokeTokenRequest{Token: *token}
+	response, err := client.ApiClient.WebApiControllerAuthControllerRevoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	status, _, err := api.ParseResponseAsString(response)
+	if err != nil {
+		return nil, err
+	}
+	return status, nil
 }
 
 // Types

@@ -67,3 +67,42 @@ func TestAuth(t *testing.T) {
 	}
 
 }
+
+func TestLogout(t *testing.T) {
+	loadEnv(t)
+
+	credentials := middleware.Credentials{
+		ApiKey:    os.Getenv("API_KEY"),
+		ApiSecret: os.Getenv("API_SECRET"),
+	}
+
+	brifleClient, err := sdk.NewClient(os.Getenv("ENDPOINT"), credentials)
+	if err != nil {
+		t.Errorf("Failed to create Brifle client: %v", err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	// obtain a token to revoke
+	loginRes, status, err := auth.Login(brifleClient, ctx, credentials.ApiKey, credentials.ApiSecret)
+	if err != nil {
+		t.Errorf("Login failed: %v", err)
+		return
+	}
+	if status.HttpStatus != 200 || loginRes == nil || loginRes.AccessToken == nil {
+		t.Error("Login did not return a token")
+		return
+	}
+
+	revokeStatus, err := auth.Logout(brifleClient, ctx, loginRes.AccessToken)
+	if err != nil {
+		t.Errorf("Logout failed: %v", err)
+		return
+	}
+	if revokeStatus != nil && revokeStatus.HttpStatus != 200 {
+		t.Errorf("Expected status code 200, got %d", revokeStatus.HttpStatus)
+		return
+	}
+}

@@ -17,6 +17,13 @@ type ClientOps struct {
 	SkipTlsVerification bool // skip TLS verification for the client
 }
 
+// NewClientWithOpts creates a Brifle client like [NewClient] but lets you pass
+// additional options, for example to skip TLS verification against a local
+// sandbox:
+//
+//	client, err := sdk.NewClientWithOpts(server, credentials, &sdk.ClientOps{
+//		SkipTlsVerification: true,
+//	})
 func NewClientWithOpts(server string, credentials middleware.Credentials, opts *ClientOps) (*apiClient.BrifleClient, error) {
 	if opts == nil {
 		opts = &ClientOps{SkipTlsVerification: false} // default value
@@ -24,6 +31,18 @@ func NewClientWithOpts(server string, credentials middleware.Credentials, opts *
 	return newClient(server, credentials, opts)
 }
 
+// NewClient creates an authenticated Brifle client for the given server using
+// the supplied API key and secret. The returned client renews its access token
+// automatically, so it can be reused for the lifetime of your program.
+//
+//	credentials := middleware.Credentials{
+//		ApiKey:    "your-api-key",
+//		ApiSecret: "your-api-secret",
+//	}
+//	client, err := sdk.NewClient("https://sandbox-api.brifle.de", credentials)
+//
+// Use https://sandbox-api.brifle.de for testing and https://api.brifle.de for
+// production.
 func NewClient(server string, credentials middleware.Credentials) (*apiClient.BrifleClient, error) {
 	return newClient(server, credentials, nil)
 }

@@ -12,12 +12,19 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
 	Bearer_authScopes = "bearer_auth.Scopes"
+)
+
+// Defines values for ApiSendContentContentRequestType.
+const (
+	Applicationpdf ApiSendContentContentRequestType = "application/pdf"
 )
 
 // Defines values for ApiSendContentSendContentRequestDeliveryCertificate.
@@ -44,6 +51,51 @@ const (
 	ContentGetDeliveryCertificateResponseMetaTypeAes ContentGetDeliveryCertificateResponseMetaType = "aes"
 )
 
+// Defines values for ContentGetDeliveryStatusResponseDeliveryStatusDeliveryMode.
+const (
+	Brifle   ContentGetDeliveryStatusResponseDeliveryStatusDeliveryMode = "brifle"
+	Physical ContentGetDeliveryStatusResponseDeliveryStatusDeliveryMode = "physical"
+)
+
+// Defines values for ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDeliverer.
+const (
+	DeutschePost ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDeliverer = "Deutsche Post"
+)
+
+// Defines values for ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDelivererPrefix.
+const (
+	Dp ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDelivererPrefix = "dp"
+)
+
+// Defines values for ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState.
+const (
+	Error         ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState = "error"
+	Preprocessing ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState = "preprocessing"
+	Processing    ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState = "processing"
+	Sent          ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState = "sent"
+	TestSent      ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState = "test_sent"
+	Unknown       ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState = "unknown"
+)
+
+// Defines values for CoverLettersOverviewResponseCoverLettersType.
+const (
+	CoverLettersOverviewResponseCoverLettersTypeCustom  CoverLettersOverviewResponseCoverLettersType = "custom"
+	CoverLettersOverviewResponseCoverLettersTypeDefault CoverLettersOverviewResponseCoverLettersType = "default"
+)
+
+// Defines values for CreateWalletRequestType.
+const (
+	ProofOfOwnership  CreateWalletRequestType = "proof_of_ownership"
+	ProofOfPermission CreateWalletRequestType = "proof_of_permission"
+)
+
+// Defines values for DataElementType.
+const (
+	Jwt  DataElementType = "jwt"
+	Text DataElementType = "text"
+	Url  DataElementType = "url"
+)
+
 // Defines values for MetaReceiverState.
 const (
 	MetaReceiverStateArchived    MetaReceiverState = "archived"
@@ -64,13 +116,36 @@ const (
 	MetaSenderStateTrashed  MetaSenderState = "trashed"
 )
 
+// Defines values for PreviewPapermailCoverLetterType.
+const (
+	PreviewPapermailCoverLetterTypeCustom  PreviewPapermailCoverLetterType = "custom"
+	PreviewPapermailCoverLetterTypeDefault PreviewPapermailCoverLetterType = "default"
+)
+
+// Defines values for ReceiverBulkExistResponseReceiversType.
+const (
+	ReceiverBulkExistResponseReceiversTypeAddressBook    ReceiverBulkExistResponseReceiversType = "address_book"
+	ReceiverBulkExistResponseReceiversTypeBirthInfo      ReceiverBulkExistResponseReceiversType = "birth_info"
+	ReceiverBulkExistResponseReceiversTypeEmail          ReceiverBulkExistResponseReceiversType = "email"
+	ReceiverBulkExistResponseReceiversTypePhone          ReceiverBulkExistResponseReceiversType = "phone"
+	ReceiverBulkExistResponseReceiversTypePostDepartment ReceiverBulkExistResponseReceiversType = "post_department"
+	ReceiverBulkExistResponseReceiversTypePostalAddress  ReceiverBulkExistResponseReceiversType = "postal_address"
+)
+
 // Defines values for ReceiverExistResponseReceiverType.
 const (
-	AddressBook    ReceiverExistResponseReceiverType = "address_book"
-	BirthInfo      ReceiverExistResponseReceiverType = "birth_info"
-	Email          ReceiverExistResponseReceiverType = "email"
-	Phone          ReceiverExistResponseReceiverType = "phone"
-	PostDepartment ReceiverExistResponseReceiverType = "post_department"
+	ReceiverExistResponseReceiverTypeAddressBook    ReceiverExistResponseReceiverType = "address_book"
+	ReceiverExistResponseReceiverTypeBirthInfo      ReceiverExistResponseReceiverType = "birth_info"
+	ReceiverExistResponseReceiverTypeEmail          ReceiverExistResponseReceiverType = "email"
+	ReceiverExistResponseReceiverTypePhone          ReceiverExistResponseReceiverType = "phone"
+	ReceiverExistResponseReceiverTypePostDepartment ReceiverExistResponseReceiverType = "post_department"
+	ReceiverExistResponseReceiverTypePostalAddress  ReceiverExistResponseReceiverType = "postal_address"
+)
+
+// Defines values for WebApiControllerContentControllerGetCoverLetterParamsFormat.
+const (
+	Base64 WebApiControllerContentControllerGetCoverLetterParamsFormat = "base64"
+	Pdf    WebApiControllerContentControllerGetCoverLetterParamsFormat = "pdf"
 )
 
 // Defines values for WebApiControllerSignatureControllerExportSignatureParamsFormat.
@@ -80,32 +155,62 @@ const (
 
 // ApiSendContentContentRequest defines model for ApiSendContentContentRequest.
 type ApiSendContentContentRequest struct {
-	// Content Content
+	// Content The base64 encoded content
 	Content *string `json:"content,omitempty"`
 
-	// Type Type
-	Type *string `json:"type,omitempty"`
+	// Type The MIME type of the content. This indicates how the app shall handle the content
+	Type *ApiSendContentContentRequestType `json:"type,omitempty"`
+}
+
+// ApiSendContentContentRequestType The MIME type of the content. This indicates how the app shall handle the content
+type ApiSendContentContentRequestType string
+
+// ApiSendContentFallback defines model for ApiSendContentFallback.
+type ApiSendContentFallback struct {
+	// EnabledPhysicalDelivery Enable Physical Delivery
+	EnabledPhysicalDelivery *bool `json:"enabled_physical_delivery,omitempty"`
+	PaperMail               *struct {
+		Recipient *struct {
+			// AddressLine1 Address Line 1
+			AddressLine1 string `json:"address_line1"`
+
+			// AddressLine2 Address Line 2
+			AddressLine2 *string `json:"address_line2,omitempty"`
+
+			// AddressLine3 Address Line 3
+			AddressLine3 *string `json:"address_line3,omitempty"`
+
+			// City City
+			City string `json:"city"`
+
+			// Country Country, the country code in ISO 3166-1 alpha-2 format
+			Country *string `json:"country,omitempty"`
+
+			// PostalCode ZIP Code
+			PostalCode string `json:"postal_code"`
+		} `json:"recipient,omitempty"`
+	} `json:"paper_mail,omitempty"`
 }
 
 // ApiSendContentPaymentDetails defines model for ApiSendContentPaymentDetails.
 type ApiSendContentPaymentDetails struct {
-	// Amount Amount
-	Amount *float32 `json:"amount,omitempty"`
+	// Amount Amount in smallest unit (e.g. cents)
+	Amount float32 `json:"amount"`
 
 	// Currency Currency
-	Currency *string `json:"currency,omitempty"`
+	Currency string `json:"currency"`
 
 	// Description Description
-	Description *string `json:"description,omitempty"`
+	Description string `json:"description"`
 
 	// DueDate Due Date
-	DueDate *string `json:"due_date,omitempty"`
+	DueDate string `json:"due_date"`
 
 	// Iban IBAN
-	Iban *string `json:"iban,omitempty"`
+	Iban string `json:"iban"`
 
 	// Reference Reference
-	Reference *string `json:"reference,omitempty"`
+	Reference string `json:"reference"`
 }
 
 // ApiSendContentPaymentInfo defines model for ApiSendContentPaymentInfo.
@@ -122,22 +227,55 @@ type ApiSendContentReceiverBirthInformation struct {
 	BirthName *string `json:"birth_name,omitempty"`
 
 	// DateOfBirth Date of Birth
-	DateOfBirth *string `json:"date_of_birth,omitempty"`
+	DateOfBirth string `json:"date_of_birth"`
 
 	// GivenNames Given Name(s)
-	GivenNames *string `json:"given_names,omitempty"`
+	GivenNames string `json:"given_names"`
 
 	// LastName Last Name
-	LastName *string `json:"last_name,omitempty"`
+	LastName string `json:"last_name"`
 
 	// Nationality Nationality
 	Nationality *string `json:"nationality,omitempty"`
 
 	// PlaceOfBirth Place of Birth
-	PlaceOfBirth *string `json:"place_of_birth,omitempty"`
+	PlaceOfBirth string `json:"place_of_birth"`
 
-	// PostalAddress Postal Address - Will be compared with the official postal address. It allows minimal variations
+	// PostalAddress Postal Address - Will be compared with the official postal address. It allows minimal variations. It is optional and can be used for highly sensitive content.
 	PostalAddress *string `json:"postal_address,omitempty"`
+}
+
+// ApiSendContentReceiverBulkRequest defines model for ApiSendContentReceiverBulkRequest.
+type ApiSendContentReceiverBulkRequest struct {
+	// Receivers List of Receiver Addresses
+	Receivers *[]ApiSendContentReceiverRequest `json:"receivers,omitempty"`
+}
+
+// ApiSendContentReceiverPostalAddress defines model for ApiSendContentReceiverPostalAddress.
+type ApiSendContentReceiverPostalAddress struct {
+	// City City
+	City string `json:"city"`
+
+	// Country Country (optional), it is not used to match yet. Works as placeholder. Either full country name in english or ISO 3166-1 alpha-2 code
+	Country string `json:"country"`
+
+	// DateOfBirth Date of Birth (optional), if set it is used to match the address more precisely
+	DateOfBirth *string `json:"date_of_birth,omitempty"`
+
+	// FirstName First Name
+	FirstName string `json:"first_name"`
+
+	// HouseNumber House Number
+	HouseNumber string `json:"house_number"`
+
+	// LastName Last Name
+	LastName string `json:"last_name"`
+
+	// Postcode Postal Code
+	Postcode string `json:"postcode"`
+
+	// Street Street
+	Street string `json:"street"`
 }
 
 // ApiSendContentReceiverRequest defines model for ApiSendContentReceiverRequest.
@@ -146,23 +284,21 @@ type ApiSendContentReceiverRequest struct {
 	AccountId        *string                                 `json:"account_id,omitempty"`
 	BirthInformation *ApiSendContentReceiverBirthInformation `json:"birth_information,omitempty"`
 
-	// DateOfBirth Date of Birth
+	// DateOfBirth Date of Birth, it is only applied to email and tel to match more precisely
 	DateOfBirth *string `json:"date_of_birth,omitempty"`
 
 	// Email Email Address
 	Email *string `json:"email,omitempty"`
 
-	// FirstName First Name
+	// FirstName First Name, it is only applied if full name is not set and only for email and tel
 	FirstName *string `json:"first_name,omitempty"`
 
-	// FullName Full Name
+	// FullName Full Name, it can be either Firstname and Lastname or Company Name. The last component is considered the Lastname. Be aware that the last name must be an exact match. It is only applied to email and tel
 	FullName *string `json:"full_name,omitempty"`
 
-	// LastName Last Name
-	LastName *string `json:"last_name,omitempty"`
-
-	// Ssn Social Security Number
-	Ssn *string `json:"ssn,omitempty"`
+	// LastName Last Name, it is only applied if full name is not set and only for email and tel
+	LastName      *string                              `json:"last_name,omitempty"`
+	PostalAddress *ApiSendContentReceiverPostalAddress `json:"postal_address,omitempty"`
 
 	// Tel Phone Number
 	Tel *string `json:"tel,omitempty"`
@@ -174,25 +310,29 @@ type ApiSendContentReceiverRequest struct {
 // ApiSendContentSendContentRequest defines model for ApiSendContentSendContentRequest.
 type ApiSendContentSendContentRequest struct {
 	// Body Content
-	Body *[]ApiSendContentContentRequest `json:"body,omitempty"`
+	Body []ApiSendContentContentRequest `json:"body"`
 
 	// DeliveryCertificate Send Delivery Certificate, none - no delivery certificate, aes - Advanced Electronic Seal
 	DeliveryCertificate *ApiSendContentSendContentRequestDeliveryCertificate `json:"delivery_certificate,omitempty"`
+	Fallback            *ApiSendContentFallback                              `json:"fallback,omitempty"`
 	PaymentInfo         *ApiSendContentPaymentInfo                           `json:"payment_info,omitempty"`
 	SignatureInfo       *ApiSendContentSignatureInfo                         `json:"signature_info,omitempty"`
 
-	// Subject Subject
-	Subject *string                        `json:"subject,omitempty"`
-	To      *ApiSendContentReceiverRequest `json:"to,omitempty"`
+	// Subject The Subject of the content, it must not contain sensitive information
+	Subject string                        `json:"subject"`
+	To      ApiSendContentReceiverRequest `json:"to"`
 
-	// Type The type of the mail, it enables content specific actions.
-	Type *ApiSendContentSendContentRequestType `json:"type,omitempty"`
+	// Type The type of the mail, it enables content specific actions. Only invoices allow payment info. While a invoice cannot contain signature info
+	Type ApiSendContentSendContentRequestType `json:"type"`
+
+	// WalletInfo This is an experimental feature. For more information contact the Brifle team.
+	WalletInfo *WalletInfo `json:"wallet_info,omitempty"`
 }
 
 // ApiSendContentSendContentRequestDeliveryCertificate Send Delivery Certificate, none - no delivery certificate, aes - Advanced Electronic Seal
 type ApiSendContentSendContentRequestDeliveryCertificate string
 
-// ApiSendContentSendContentRequestType The type of the mail, it enables content specific actions.
+// ApiSendContentSendContentRequestType The type of the mail, it enables content specific actions. Only invoices allow payment info. While a invoice cannot contain signature info
 type ApiSendContentSendContentRequestType string
 
 // ApiSendContentSignatureInfo defines model for ApiSendContentSignatureInfo.
@@ -200,10 +340,10 @@ type ApiSendContentSignatureInfo struct {
 	// RequestingSigner Requesting Signer
 	RequestingSigner *[]struct {
 		// Field Field
-		Field *string `json:"field,omitempty"`
+		Field string `json:"field"`
 
 		// Signer Which party shall sign the field
-		Signer *ApiSendContentSignatureInfoRequestingSignerSigner `json:"signer,omitempty"`
+		Signer ApiSendContentSignatureInfoRequestingSignerSigner `json:"signer"`
 	} `json:"requesting_signer,omitempty"`
 
 	// SignatureReference Signature Reference
@@ -229,6 +369,15 @@ type BasicAccountInfoResponse struct {
 
 	// Type The type of the account. private, business
 	Type *string `json:"type,omitempty"`
+}
+
+// Body Schema for the body content included in the paper mail.
+type Body struct {
+	// Content Base64 encoded content to be sent as paper mail.
+	Content string `json:"content"`
+
+	// Type MIME type of the content (e.g., application/pdf).
+	Type string `json:"type"`
 }
 
 // Content defines model for Content.
@@ -317,11 +466,99 @@ type ContentGetDeliveryCertificateResponse struct {
 // ContentGetDeliveryCertificateResponseMetaType The type of the delivery certificate. aes - advanced electronic seal.
 type ContentGetDeliveryCertificateResponseMetaType string
 
+// ContentGetDeliveryStatusResponse Response schema for getting the delivery status of a document
+type ContentGetDeliveryStatusResponse struct {
+	DeliveryStatus struct {
+		// Brifle Details specific to Brifle delivery mode. Only present if delivery_mode is 'brifle'
+		Brifle *struct {
+			// DeliveredDate The date and time when the document was delivered
+			DeliveredDate string `json:"delivered_date"`
+
+			// Read Indicates if the document has been read
+			Read bool `json:"read"`
+		} `json:"brifle,omitempty"`
+
+		// DeliveryMode The delivery mode of the document
+		DeliveryMode ContentGetDeliveryStatusResponseDeliveryStatusDeliveryMode `json:"delivery_mode"`
+
+		// DocumentId The ID of the document
+		DocumentId string `json:"document_id"`
+
+		// Physical Details specific to physical delivery mode. Only present if delivery_mode is 'physical'
+		Physical *struct {
+			// Deliverer The name of the deliverer
+			Deliverer ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDeliverer `json:"deliverer"`
+
+			// DelivererPrefix The prefix used by the deliverer
+			DelivererPrefix ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDelivererPrefix `json:"deliverer_prefix"`
+
+			// DocumentId The ID of the document
+			DocumentId string `json:"document_id"`
+
+			// Errors List of errors encountered during physical delivery
+			Errors []struct {
+				// DpErrorCode Deutsche Post error code
+				DpErrorCode string `json:"dp_error_code"`
+
+				// DpErrorDate Date and time of the error
+				DpErrorDate string `json:"dp_error_date"`
+
+				// DpErrorDescription Description of the error
+				DpErrorDescription string `json:"dp_error_description"`
+
+				// DpLevel Severity level of the error
+				DpLevel string `json:"dp_level"`
+			} `json:"errors"`
+
+			// LastStatusCheck The last time the status was checked
+			LastStatusCheck string `json:"last_status_check"`
+
+			// LetterId The ID of the letter in the Deutsche Post system
+			LetterId string `json:"letter_id"`
+
+			// State The current state of the physical delivery
+			State ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState `json:"state"`
+		} `json:"physical,omitempty"`
+
+		// TenantId The ID of the tenant
+		TenantId openapi_types.UUID `json:"tenant_id"`
+	} `json:"delivery_status"`
+}
+
+// ContentGetDeliveryStatusResponseDeliveryStatusDeliveryMode The delivery mode of the document
+type ContentGetDeliveryStatusResponseDeliveryStatusDeliveryMode string
+
+// ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDeliverer The name of the deliverer
+type ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDeliverer string
+
+// ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDelivererPrefix The prefix used by the deliverer
+type ContentGetDeliveryStatusResponseDeliveryStatusPhysicalDelivererPrefix string
+
+// ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState The current state of the physical delivery
+type ContentGetDeliveryStatusResponseDeliveryStatusPhysicalState string
+
 // ContentGetResponse defines model for ContentGetResponse.
 type ContentGetResponse struct {
 	Content *[]Content `json:"content,omitempty"`
 	Meta    *Meta      `json:"meta,omitempty"`
 }
+
+// CoverLettersOverviewResponse defines model for CoverLettersOverviewResponse.
+type CoverLettersOverviewResponse struct {
+	CoverLetters *[]struct {
+		// DisplayName The display name of the cover letter.
+		DisplayName *string `json:"display_name,omitempty"`
+
+		// Name The name of the cover letter file.
+		Name *string `json:"name,omitempty"`
+
+		// Type The type of the cover letter. 'default' for built-in templates, 'custom' for user-uploaded templates.
+		Type *CoverLettersOverviewResponseCoverLettersType `json:"type,omitempty"`
+	} `json:"cover_letters,omitempty"`
+}
+
+// CoverLettersOverviewResponseCoverLettersType The type of the cover letter. 'default' for built-in templates, 'custom' for user-uploaded templates.
+type CoverLettersOverviewResponseCoverLettersType string
 
 // CreateSignatureReferenceRequest defines model for CreateSignatureReferenceRequest.
 type CreateSignatureReferenceRequest struct {
@@ -338,11 +575,71 @@ type CreateSignatureReferenceRequest struct {
 	} `json:"fields,omitempty"`
 }
 
+// CreateWalletRequest defines model for CreateWalletRequest.
+type CreateWalletRequest struct {
+	// Data Data elements of the wallet item
+	Data WalletDataElement `json:"data"`
+
+	// ExpiresAt The expiration time of the wallet item (ISO 8601 format), set to null for no expiration
+	ExpiresAt *time.Time `json:"expires_at"`
+
+	// ExportWallet Settings for exporting the wallet item to external wallets
+	ExportWallet *ExportWallet `json:"export_wallet,omitempty"`
+
+	// Immutable If set to false, the element can be updated until it is assigned to a user wallet, otherwise it is immutable once created it cannot be changed
+	Immutable *bool `json:"immutable,omitempty"`
+
+	// NotBefore The time before which the wallet item is not valid (ISO 8601 format)
+	NotBefore *time.Time `json:"not_before"`
+
+	// RetentionPeriodDays Number of days to retain the wallet item if it is unassigned, defaults to 30 days
+	RetentionPeriodDays *int `json:"retention_period_days,omitempty"`
+
+	// Styles Styles for wallet credential display. If not specified a default style will be used.
+	Styles *WalletStyle `json:"styles,omitempty"`
+
+	// Subject Subject of the wallet item, e.g. 'Driver's License'
+	Subject string `json:"subject"`
+
+	// Type Type of the wallet item
+	Type CreateWalletRequestType `json:"type"`
+}
+
+// CreateWalletRequestType Type of the wallet item
+type CreateWalletRequestType string
+
+// DataElement defines model for DataElement.
+type DataElement struct {
+	// Name Name of the data element
+	Name *string `json:"name,omitempty"`
+
+	// ReferenceId (optional, but required for optimised export) ID of the data element. It must be unique within the wallet item. It is used to reference the data element from other parts of the wallet item. It should not contain sensitive information.
+	ReferenceId *string `json:"reference_id,omitempty"`
+
+	// Type Type of the data element, e.g. 'text' or 'url'. JWT is a signed webtoken that can contain verifiable credentials or other information. The type can be used by the wallet to determine how to display the data element or how to handle it when exporting to other wallets.
+	Type *DataElementType `json:"type,omitempty"`
+
+	// Value Value of the data element
+	Value *string `json:"value,omitempty"`
+}
+
+// DataElementType Type of the data element, e.g. 'text' or 'url'. JWT is a signed webtoken that can contain verifiable credentials or other information. The type can be used by the wallet to determine how to display the data element or how to handle it when exporting to other wallets.
+type DataElementType string
+
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	Code    *float32 `json:"code,omitempty"`
 	Message *string  `json:"message,omitempty"`
 	Status  *float32 `json:"status,omitempty"`
+}
+
+// ExportWallet Settings for exporting the wallet item to external wallets
+type ExportWallet struct {
+	// AppleWallet If true, allows the wallet item to be exported to Apple Wallet
+	AppleWallet *bool `json:"apple_wallet,omitempty"`
+
+	// GoogleWallet If true, allows the wallet item to be exported to Google Wallet
+	GoogleWallet *bool `json:"google_wallet,omitempty"`
 }
 
 // Item defines model for Item.
@@ -444,6 +741,95 @@ type MyOutboxRequest struct {
 	SenderUser *string `json:"sender_user,omitempty"`
 }
 
+// ParseAddressArrayResponse defines model for ParseAddressArrayResponse.
+type ParseAddressArrayResponse = []struct {
+	// City The city
+	City string `json:"city"`
+
+	// Country The country
+	Country string `json:"country"`
+
+	// HouseNumber The house number
+	HouseNumber string `json:"house_number"`
+
+	// Postcode The postal code
+	Postcode string `json:"postcode"`
+
+	// Street The street name
+	Street string `json:"street"`
+}
+
+// ParseAddressRequest defines model for ParseAddressRequest.
+type ParseAddressRequest struct {
+	// Address The address to be parsed
+	Address string `json:"address"`
+}
+
+// ParseAddressResponse defines model for ParseAddressResponse.
+type ParseAddressResponse struct {
+	// City The city
+	City string `json:"city"`
+
+	// Country The country
+	Country string `json:"country"`
+
+	// HouseNumber The house number
+	HouseNumber string `json:"house_number"`
+
+	// Postcode The postal code
+	Postcode string `json:"postcode"`
+
+	// Street The street name
+	Street string `json:"street"`
+}
+
+// PreviewPapermailCoverLetter Schema for the cover letter included in the paper mail.
+type PreviewPapermailCoverLetter struct {
+	// Data Custom data for the cover letter.
+	Data *string `json:"data"`
+
+	// Enable Whether to include a cover letter.
+	Enable bool `json:"enable"`
+
+	// Name Name of the cover letter template. If data is provided, this name is ignored.
+	Name string `json:"name"`
+
+	// Type Type of the cover letter, default = predefined templates, custom = self-defined
+	Type PreviewPapermailCoverLetterType `json:"type"`
+}
+
+// PreviewPapermailCoverLetterType Type of the cover letter, default = predefined templates, custom = self-defined
+type PreviewPapermailCoverLetterType string
+
+// PreviewPapermailReceiver Schema for the recipient of the paper mail.
+type PreviewPapermailReceiver struct {
+	// AddressLine1 First line of the recipient's address.
+	AddressLine1 string `json:"address_line1"`
+
+	// AddressLine2 Second line of the recipient's address.
+	AddressLine2 *string `json:"address_line2,omitempty"`
+
+	// City City of the recipient.
+	City string `json:"city"`
+
+	// Country Country of the recipient.
+	Country string `json:"country"`
+
+	// PostalCode Postal code of the recipient.
+	PostalCode string `json:"postal_code"`
+}
+
+// ReceiverBulkExistResponse defines model for ReceiverBulkExistResponse.
+type ReceiverBulkExistResponse struct {
+	Receivers *[]struct {
+		// Type The type of the receiver information: i.e. email, phone, or birth_info
+		Type *ReceiverBulkExistResponseReceiversType `json:"type,omitempty"`
+	} `json:"receivers,omitempty"`
+}
+
+// ReceiverBulkExistResponseReceiversType The type of the receiver information: i.e. email, phone, or birth_info
+type ReceiverBulkExistResponseReceiversType string
+
 // ReceiverExistResponse defines model for ReceiverExistResponse.
 type ReceiverExistResponse struct {
 	Receiver *struct {
@@ -461,6 +847,27 @@ type RevokeTokenRequest struct {
 	Token string `json:"token"`
 }
 
+// Row A row in the wallet item style
+type Row struct {
+	// Left The reference ID of the data element to be shown on the left side of the row
+	Left string `json:"left"`
+
+	// Right The reference ID of the data element to be shown on the right side of the row
+	Right string `json:"right"`
+}
+
+// SendContentPreviewPapermailRequest Request schema for sending a content preview as paper mail.
+type SendContentPreviewPapermailRequest struct {
+	// Body Schema for the body content included in the paper mail.
+	Body Body `json:"body"`
+
+	// CoverLetter Schema for the cover letter included in the paper mail.
+	CoverLetter PreviewPapermailCoverLetter `json:"cover_letter"`
+
+	// To Schema for the recipient of the paper mail.
+	To PreviewPapermailReceiver `json:"to"`
+}
+
 // SignatureReference defines model for SignatureReference.
 type SignatureReference struct {
 	// DocumentSignatures The document signatures
@@ -472,6 +879,15 @@ type SignatureReference struct {
 
 	// SignatureFields The fields defining the signature reference
 	SignatureFields json.RawMessage `json:"signature_fields,omitempty"`
+}
+
+// StatusResponse defines model for StatusResponse.
+type StatusResponse struct {
+	Features  *[]string `json:"features,omitempty"`
+	Service   *string   `json:"service,omitempty"`
+	Status    *string   `json:"status,omitempty"`
+	Timestamp *string   `json:"timestamp,omitempty"`
+	Version   *string   `json:"version,omitempty"`
 }
 
 // TenantListResponse defines model for TenantListResponse.
@@ -489,6 +905,131 @@ type TenantResponse struct {
 	Private   *bool   `json:"private,omitempty"`
 }
 
+// UpdateCoverLetterRequest Request schema for updating a cover letter.
+type UpdateCoverLetterRequest struct {
+	// Content The content of the cover letter in base64 encoding.
+	Content string `json:"content"`
+
+	// Name The name of the cover letter.
+	Name string `json:"name"`
+}
+
+// UpdateCoverLetterResponse Response schema for updating a cover letter.
+type UpdateCoverLetterResponse struct {
+	// Description A description of the cover letter.
+	Description string `json:"description"`
+
+	// DisplayName The display name of the cover letter.
+	DisplayName string `json:"display_name"`
+
+	// Id The unique identifier of the cover letter.
+	Id string `json:"id"`
+
+	// Name The name of the cover letter.
+	Name string `json:"name"`
+
+	// Type The type of the cover letter, e.g., 'custom'.
+	Type string `json:"type"`
+}
+
+// WalletDataElement Data elements of the wallet item
+type WalletDataElement struct {
+	// Elements Array of data elements
+	Elements []DataElement `json:"elements"`
+}
+
+// WalletDataResponse Wallet Item Data Response
+type WalletDataResponse struct {
+	// Elements The data elements of the wallet item
+	Elements *[]struct {
+		// Name The name of the data element
+		Name *string `json:"name,omitempty"`
+
+		// Type The type of the data element
+		Type *string `json:"type,omitempty"`
+
+		// Value The value of the data element
+		Value *string `json:"value,omitempty"`
+	} `json:"elements,omitempty"`
+}
+
+// WalletInfo This is an experimental feature. For more information contact the Brifle team.
+type WalletInfo struct {
+	Items *[]struct {
+		// ItemId Wallet Item ID, you can create a new wallet item via the wallet API
+		ItemId string `json:"item_id"`
+	} `json:"items,omitempty"`
+}
+
+// WalletItemResponse A Wallet Item
+type WalletItemResponse struct {
+	// Data Wallet Item Data Response
+	Data *WalletDataResponse `json:"data,omitempty"`
+
+	// Meta Wallet Item Metadata Response
+	Meta *WalletMetaResponse `json:"meta,omitempty"`
+}
+
+// WalletMetaResponse Wallet Item Metadata Response
+type WalletMetaResponse struct {
+	// HasOwner Indicates if the wallet item has an owner assigned. Once assigned the item cannot be revoked or updated
+	HasOwner *bool `json:"has_owner,omitempty"`
+
+	// Id The ID of the wallet item
+	Id *string `json:"id,omitempty"`
+
+	// Immutable Indicates if the wallet item is immutable before assignment
+	Immutable *bool `json:"immutable,omitempty"`
+
+	// InsertedAt Timestamp when the wallet item was created
+	InsertedAt *time.Time `json:"inserted_at,omitempty"`
+
+	// Issuer The ID of the issuer of the wallet item
+	Issuer *string `json:"issuer,omitempty"`
+
+	// RetentionPeriodDays Number of days the wallet item is retained
+	RetentionPeriodDays *int `json:"retention_period_days,omitempty"`
+
+	// Subject The subject of the wallet item
+	Subject *string `json:"subject,omitempty"`
+
+	// Type The type of the wallet item
+	Type *string `json:"type,omitempty"`
+
+	// UpdatedAt Timestamp when the wallet item was last updated
+	UpdatedAt *time.Time `json:"updated_at,omitempty"`
+}
+
+// WalletStyle Styles for wallet credential display. If not specified a default style will be used.
+type WalletStyle struct {
+	// BackgroundColor Hex color code for background color
+	BackgroundColor *string `json:"background_color,omitempty"`
+
+	// OnBackgroundColor Hex color code for text/icons on background color
+	OnBackgroundColor *string `json:"on_background_color,omitempty"`
+
+	// OnPrimaryColor Hex color code for text/icons on primary color
+	OnPrimaryColor *string `json:"on_primary_color,omitempty"`
+
+	// OnSecondaryColor Hex color code for text/icons on secondary color
+	OnSecondaryColor *string `json:"on_secondary_color,omitempty"`
+
+	// PrimaryColor Hex color code for primary color
+	PrimaryColor *string `json:"primary_color,omitempty"`
+
+	// PrimaryQrCodeData The reference id of the data element to be used for the primary QR code. This data is shown in the preview card of the wallet item. It also used when exported to another wallet that supports QR codes.
+	PrimaryQrCodeData *string `json:"primary_qr_code_data,omitempty"`
+
+	// Rows Array of rows to be displayed in the wallet item. If not specified each data will be shown in a separate row.
+	Rows *[]Row `json:"rows,omitempty"`
+
+	// SecondaryColor Hex color code for secondary color
+	SecondaryColor *string `json:"secondary_color,omitempty"`
+}
+
+// WebApiControllerContentControllerGetCoverLetterParamsFormat defines parameters for WebApiControllerContentControllerGetCoverLetter.
+type WebApiControllerContentControllerGetCoverLetterParamsFormat string
+
 // WebApiControllerContentControllerGetParams defines parameters for WebApiControllerContentControllerGet.
 type WebApiControllerContentControllerGetParams struct {
 	// Read Set to true if you want to mark the document as read
@@ -498,14 +1039,29 @@ type WebApiControllerContentControllerGetParams struct {
 // WebApiControllerSignatureControllerExportSignatureParamsFormat defines parameters for WebApiControllerSignatureControllerExportSignature.
 type WebApiControllerSignatureControllerExportSignatureParamsFormat string
 
+// WebApiControllerAddressControllerParseAddressJSONRequestBody defines body for WebApiControllerAddressControllerParseAddress for application/json ContentType.
+type WebApiControllerAddressControllerParseAddressJSONRequestBody = ParseAddressRequest
+
+// WebApiControllerAddressControllerParseAndExpandAddressJSONRequestBody defines body for WebApiControllerAddressControllerParseAndExpandAddress for application/json ContentType.
+type WebApiControllerAddressControllerParseAndExpandAddressJSONRequestBody = ParseAddressRequest
+
 // WebApiControllerAuthControllerCreateJSONRequestBody defines body for WebApiControllerAuthControllerCreate for application/json ContentType.
 type WebApiControllerAuthControllerCreateJSONRequestBody = LoginApiKeyRequest
 
 // WebApiControllerAuthControllerRevokeJSONRequestBody defines body for WebApiControllerAuthControllerRevoke for application/json ContentType.
 type WebApiControllerAuthControllerRevokeJSONRequestBody = RevokeTokenRequest
 
+// WebApiControllerContentControllerUploadCoverLetterJSONRequestBody defines body for WebApiControllerContentControllerUploadCoverLetter for application/json ContentType.
+type WebApiControllerContentControllerUploadCoverLetterJSONRequestBody = UpdateCoverLetterRequest
+
+// WebApiControllerContentControllerPreviewPaperMailJSONRequestBody defines body for WebApiControllerContentControllerPreviewPaperMail for application/json ContentType.
+type WebApiControllerContentControllerPreviewPaperMailJSONRequestBody = SendContentPreviewPapermailRequest
+
 // WebApiControllerContentControllerCheckReceiverJSONRequestBody defines body for WebApiControllerContentControllerCheckReceiver for application/json ContentType.
 type WebApiControllerContentControllerCheckReceiverJSONRequestBody = ApiSendContentReceiverRequest
+
+// WebApiControllerContentControllerCheckReceiverBulkJSONRequestBody defines body for WebApiControllerContentControllerCheckReceiverBulk for application/json ContentType.
+type WebApiControllerContentControllerCheckReceiverBulkJSONRequestBody = ApiSendContentReceiverBulkRequest
 
 // WebApiControllerContentControllerSendJSONRequestBody defines body for WebApiControllerContentControllerSend for application/json ContentType.
 type WebApiControllerContentControllerSendJSONRequestBody = ApiSendContentSendContentRequest
@@ -518,6 +1074,9 @@ type WebApiControllerMailboxControllerGetMyOutboxJSONRequestBody = MyOutboxReque
 
 // WebApiControllerSignatureControllerCreateSignatureReferenceJSONRequestBody defines body for WebApiControllerSignatureControllerCreateSignatureReference for application/json ContentType.
 type WebApiControllerSignatureControllerCreateSignatureReferenceJSONRequestBody = CreateSignatureReferenceRequest
+
+// WebApiControllerWalletControllerCreateWalletItemJSONRequestBody defines body for WebApiControllerWalletControllerCreateWalletItem for application/json ContentType.
+type WebApiControllerWalletControllerCreateWalletItemJSONRequestBody = CreateWalletRequest
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -595,6 +1154,16 @@ type ClientInterface interface {
 	// WebApiControllerAccountsControllerGetBasicInfo request
 	WebApiControllerAccountsControllerGetBasicInfo(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// WebApiControllerAddressControllerParseAddressWithBody request with any body
+	WebApiControllerAddressControllerParseAddressWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	WebApiControllerAddressControllerParseAddress(ctx context.Context, body WebApiControllerAddressControllerParseAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WebApiControllerAddressControllerParseAndExpandAddressWithBody request with any body
+	WebApiControllerAddressControllerParseAndExpandAddressWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	WebApiControllerAddressControllerParseAndExpandAddress(ctx context.Context, body WebApiControllerAddressControllerParseAndExpandAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// WebApiControllerAuthControllerCreateWithBody request with any body
 	WebApiControllerAuthControllerCreateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -605,6 +1174,20 @@ type ClientInterface interface {
 
 	WebApiControllerAuthControllerRevoke(ctx context.Context, body WebApiControllerAuthControllerRevokeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// WebApiControllerContentControllerUploadCoverLetterWithBody request with any body
+	WebApiControllerContentControllerUploadCoverLetterWithBody(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	WebApiControllerContentControllerUploadCoverLetter(ctx context.Context, tenant string, body WebApiControllerContentControllerUploadCoverLetterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WebApiControllerContentControllerDeleteCoverLetter request
+	WebApiControllerContentControllerDeleteCoverLetter(ctx context.Context, tenant string, name string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WebApiControllerContentControllerGetCoverLettersList request
+	WebApiControllerContentControllerGetCoverLettersList(ctx context.Context, tenant string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WebApiControllerContentControllerGetCoverLetter request
+	WebApiControllerContentControllerGetCoverLetter(ctx context.Context, tenant string, pType string, fileName string, format WebApiControllerContentControllerGetCoverLetterParamsFormat, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// WebApiControllerContentControllerGet request
 	WebApiControllerContentControllerGet(ctx context.Context, id string, params *WebApiControllerContentControllerGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -614,10 +1197,23 @@ type ClientInterface interface {
 	// WebApiControllerContentControllerGetDeliveryCertificate request
 	WebApiControllerContentControllerGetDeliveryCertificate(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// WebApiControllerContentControllerGetDeliveryStatus request
+	WebApiControllerContentControllerGetDeliveryStatus(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WebApiControllerContentControllerPreviewPaperMailWithBody request with any body
+	WebApiControllerContentControllerPreviewPaperMailWithBody(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	WebApiControllerContentControllerPreviewPaperMail(ctx context.Context, tenant string, body WebApiControllerContentControllerPreviewPaperMailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// WebApiControllerContentControllerCheckReceiverWithBody request with any body
 	WebApiControllerContentControllerCheckReceiverWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	WebApiControllerContentControllerCheckReceiver(ctx context.Context, body WebApiControllerContentControllerCheckReceiverJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WebApiControllerContentControllerCheckReceiverBulkWithBody request with any body
+	WebApiControllerContentControllerCheckReceiverBulkWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	WebApiControllerContentControllerCheckReceiverBulk(ctx context.Context, body WebApiControllerContentControllerCheckReceiverBulkJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// WebApiControllerContentControllerSendWithBody request with any body
 	WebApiControllerContentControllerSendWithBody(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -642,15 +1238,77 @@ type ClientInterface interface {
 
 	WebApiControllerSignatureControllerCreateSignatureReference(ctx context.Context, tenantId string, body WebApiControllerSignatureControllerCreateSignatureReferenceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// WebApiControllerStatusControllerGetStatus request
+	WebApiControllerStatusControllerGetStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// WebApiControllerTenantControllerGetTenant request
 	WebApiControllerTenantControllerGetTenant(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// WebApiControllerTenantControllerGetOwn request
 	WebApiControllerTenantControllerGetOwn(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WebApiControllerWalletControllerCreateWalletItemWithBody request with any body
+	WebApiControllerWalletControllerCreateWalletItemWithBody(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	WebApiControllerWalletControllerCreateWalletItem(ctx context.Context, tenant string, body WebApiControllerWalletControllerCreateWalletItemJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WebApiControllerWalletControllerReadWalletItem request
+	WebApiControllerWalletControllerReadWalletItem(ctx context.Context, tenant string, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// WebApiControllerWalletControllerDeleteWalletItem request
+	WebApiControllerWalletControllerDeleteWalletItem(ctx context.Context, tenant string, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) WebApiControllerAccountsControllerGetBasicInfo(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewWebApiControllerAccountsControllerGetBasicInfoRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerAddressControllerParseAddressWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerAddressControllerParseAddressRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerAddressControllerParseAddress(ctx context.Context, body WebApiControllerAddressControllerParseAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerAddressControllerParseAddressRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerAddressControllerParseAndExpandAddressWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerAddressControllerParseAndExpandAddressRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerAddressControllerParseAndExpandAddress(ctx context.Context, body WebApiControllerAddressControllerParseAndExpandAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerAddressControllerParseAndExpandAddressRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -709,6 +1367,66 @@ func (c *Client) WebApiControllerAuthControllerRevoke(ctx context.Context, body 
 	return c.Client.Do(req)
 }
 
+func (c *Client) WebApiControllerContentControllerUploadCoverLetterWithBody(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerUploadCoverLetterRequestWithBody(c.Server, tenant, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerContentControllerUploadCoverLetter(ctx context.Context, tenant string, body WebApiControllerContentControllerUploadCoverLetterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerUploadCoverLetterRequest(c.Server, tenant, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerContentControllerDeleteCoverLetter(ctx context.Context, tenant string, name string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerDeleteCoverLetterRequest(c.Server, tenant, name)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerContentControllerGetCoverLettersList(ctx context.Context, tenant string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerGetCoverLettersListRequest(c.Server, tenant)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerContentControllerGetCoverLetter(ctx context.Context, tenant string, pType string, fileName string, format WebApiControllerContentControllerGetCoverLetterParamsFormat, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerGetCoverLetterRequest(c.Server, tenant, pType, fileName, format)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) WebApiControllerContentControllerGet(ctx context.Context, id string, params *WebApiControllerContentControllerGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewWebApiControllerContentControllerGetRequest(c.Server, id, params)
 	if err != nil {
@@ -745,6 +1463,42 @@ func (c *Client) WebApiControllerContentControllerGetDeliveryCertificate(ctx con
 	return c.Client.Do(req)
 }
 
+func (c *Client) WebApiControllerContentControllerGetDeliveryStatus(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerGetDeliveryStatusRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerContentControllerPreviewPaperMailWithBody(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerPreviewPaperMailRequestWithBody(c.Server, tenant, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerContentControllerPreviewPaperMail(ctx context.Context, tenant string, body WebApiControllerContentControllerPreviewPaperMailJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerPreviewPaperMailRequest(c.Server, tenant, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) WebApiControllerContentControllerCheckReceiverWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewWebApiControllerContentControllerCheckReceiverRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -759,6 +1513,30 @@ func (c *Client) WebApiControllerContentControllerCheckReceiverWithBody(ctx cont
 
 func (c *Client) WebApiControllerContentControllerCheckReceiver(ctx context.Context, body WebApiControllerContentControllerCheckReceiverJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewWebApiControllerContentControllerCheckReceiverRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerContentControllerCheckReceiverBulkWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerCheckReceiverBulkRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerContentControllerCheckReceiverBulk(ctx context.Context, body WebApiControllerContentControllerCheckReceiverBulkJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerContentControllerCheckReceiverBulkRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -877,6 +1655,18 @@ func (c *Client) WebApiControllerSignatureControllerCreateSignatureReference(ctx
 	return c.Client.Do(req)
 }
 
+func (c *Client) WebApiControllerStatusControllerGetStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerStatusControllerGetStatusRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) WebApiControllerTenantControllerGetTenant(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewWebApiControllerTenantControllerGetTenantRequest(c.Server, id)
 	if err != nil {
@@ -891,6 +1681,54 @@ func (c *Client) WebApiControllerTenantControllerGetTenant(ctx context.Context, 
 
 func (c *Client) WebApiControllerTenantControllerGetOwn(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewWebApiControllerTenantControllerGetOwnRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerWalletControllerCreateWalletItemWithBody(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerWalletControllerCreateWalletItemRequestWithBody(c.Server, tenant, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerWalletControllerCreateWalletItem(ctx context.Context, tenant string, body WebApiControllerWalletControllerCreateWalletItemJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerWalletControllerCreateWalletItemRequest(c.Server, tenant, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerWalletControllerReadWalletItem(ctx context.Context, tenant string, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerWalletControllerReadWalletItemRequest(c.Server, tenant, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) WebApiControllerWalletControllerDeleteWalletItem(ctx context.Context, tenant string, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewWebApiControllerWalletControllerDeleteWalletItemRequest(c.Server, tenant, id)
 	if err != nil {
 		return nil, err
 	}
@@ -931,6 +1769,86 @@ func NewWebApiControllerAccountsControllerGetBasicInfoRequest(server string, id 
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewWebApiControllerAddressControllerParseAddressRequest calls the generic WebApiControllerAddressControllerParseAddress builder with application/json body
+func NewWebApiControllerAddressControllerParseAddressRequest(server string, body WebApiControllerAddressControllerParseAddressJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewWebApiControllerAddressControllerParseAddressRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewWebApiControllerAddressControllerParseAddressRequestWithBody generates requests for WebApiControllerAddressControllerParseAddress with any type of body
+func NewWebApiControllerAddressControllerParseAddressRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/address/parse")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewWebApiControllerAddressControllerParseAndExpandAddressRequest calls the generic WebApiControllerAddressControllerParseAndExpandAddress builder with application/json body
+func NewWebApiControllerAddressControllerParseAndExpandAddressRequest(server string, body WebApiControllerAddressControllerParseAndExpandAddressJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewWebApiControllerAddressControllerParseAndExpandAddressRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewWebApiControllerAddressControllerParseAndExpandAddressRequestWithBody generates requests for WebApiControllerAddressControllerParseAndExpandAddress with any type of body
+func NewWebApiControllerAddressControllerParseAndExpandAddressRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/address/parse_and_expand")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -1011,6 +1929,183 @@ func NewWebApiControllerAuthControllerRevokeRequestWithBody(server string, conte
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewWebApiControllerContentControllerUploadCoverLetterRequest calls the generic WebApiControllerContentControllerUploadCoverLetter builder with application/json body
+func NewWebApiControllerContentControllerUploadCoverLetterRequest(server string, tenant string, body WebApiControllerContentControllerUploadCoverLetterJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewWebApiControllerContentControllerUploadCoverLetterRequestWithBody(server, tenant, "application/json", bodyReader)
+}
+
+// NewWebApiControllerContentControllerUploadCoverLetterRequestWithBody generates requests for WebApiControllerContentControllerUploadCoverLetter with any type of body
+func NewWebApiControllerContentControllerUploadCoverLetterRequestWithBody(server string, tenant string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenant", runtime.ParamLocationPath, tenant)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/content/cover_letter/%s/custom/new", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewWebApiControllerContentControllerDeleteCoverLetterRequest generates requests for WebApiControllerContentControllerDeleteCoverLetter
+func NewWebApiControllerContentControllerDeleteCoverLetterRequest(server string, tenant string, name string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenant", runtime.ParamLocationPath, tenant)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "name", runtime.ParamLocationPath, name)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/content/cover_letter/%s/custom/%s/delete", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewWebApiControllerContentControllerGetCoverLettersListRequest generates requests for WebApiControllerContentControllerGetCoverLettersList
+func NewWebApiControllerContentControllerGetCoverLettersListRequest(server string, tenant string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenant", runtime.ParamLocationPath, tenant)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/content/cover_letter/%s/list", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewWebApiControllerContentControllerGetCoverLetterRequest generates requests for WebApiControllerContentControllerGetCoverLetter
+func NewWebApiControllerContentControllerGetCoverLetterRequest(server string, tenant string, pType string, fileName string, format WebApiControllerContentControllerGetCoverLetterParamsFormat) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenant", runtime.ParamLocationPath, tenant)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "type", runtime.ParamLocationPath, pType)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "file_name", runtime.ParamLocationPath, fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam3 string
+
+	pathParam3, err = runtime.StyleParamWithLocation("simple", false, "format", runtime.ParamLocationPath, format)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/content/cover_letter/%s/%s/%s/%s", pathParam0, pathParam1, pathParam2, pathParam3)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -1139,6 +2234,87 @@ func NewWebApiControllerContentControllerGetDeliveryCertificateRequest(server st
 	return req, nil
 }
 
+// NewWebApiControllerContentControllerGetDeliveryStatusRequest generates requests for WebApiControllerContentControllerGetDeliveryStatus
+func NewWebApiControllerContentControllerGetDeliveryStatusRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/content/document/%s/delivery_status", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewWebApiControllerContentControllerPreviewPaperMailRequest calls the generic WebApiControllerContentControllerPreviewPaperMail builder with application/json body
+func NewWebApiControllerContentControllerPreviewPaperMailRequest(server string, tenant string, body WebApiControllerContentControllerPreviewPaperMailJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewWebApiControllerContentControllerPreviewPaperMailRequestWithBody(server, tenant, "application/json", bodyReader)
+}
+
+// NewWebApiControllerContentControllerPreviewPaperMailRequestWithBody generates requests for WebApiControllerContentControllerPreviewPaperMail with any type of body
+func NewWebApiControllerContentControllerPreviewPaperMailRequestWithBody(server string, tenant string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenant", runtime.ParamLocationPath, tenant)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/content/preview/%s/paper_mail", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewWebApiControllerContentControllerCheckReceiverRequest calls the generic WebApiControllerContentControllerCheckReceiver builder with application/json body
 func NewWebApiControllerContentControllerCheckReceiverRequest(server string, body WebApiControllerContentControllerCheckReceiverJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -1160,6 +2336,46 @@ func NewWebApiControllerContentControllerCheckReceiverRequestWithBody(server str
 	}
 
 	operationPath := fmt.Sprintf("/v1/content/receiver/check")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewWebApiControllerContentControllerCheckReceiverBulkRequest calls the generic WebApiControllerContentControllerCheckReceiverBulk builder with application/json body
+func NewWebApiControllerContentControllerCheckReceiverBulkRequest(server string, body WebApiControllerContentControllerCheckReceiverBulkJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewWebApiControllerContentControllerCheckReceiverBulkRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewWebApiControllerContentControllerCheckReceiverBulkRequestWithBody generates requests for WebApiControllerContentControllerCheckReceiverBulk with any type of body
+func NewWebApiControllerContentControllerCheckReceiverBulkRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/content/receiver/check/bulk")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1401,6 +2617,33 @@ func NewWebApiControllerSignatureControllerCreateSignatureReferenceRequestWithBo
 	return req, nil
 }
 
+// NewWebApiControllerStatusControllerGetStatusRequest generates requests for WebApiControllerStatusControllerGetStatus
+func NewWebApiControllerStatusControllerGetStatusRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/status")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewWebApiControllerTenantControllerGetTenantRequest generates requests for WebApiControllerTenantControllerGetTenant
 func NewWebApiControllerTenantControllerGetTenantRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -1462,6 +2705,135 @@ func NewWebApiControllerTenantControllerGetOwnRequest(server string) (*http.Requ
 	return req, nil
 }
 
+// NewWebApiControllerWalletControllerCreateWalletItemRequest calls the generic WebApiControllerWalletControllerCreateWalletItem builder with application/json body
+func NewWebApiControllerWalletControllerCreateWalletItemRequest(server string, tenant string, body WebApiControllerWalletControllerCreateWalletItemJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewWebApiControllerWalletControllerCreateWalletItemRequestWithBody(server, tenant, "application/json", bodyReader)
+}
+
+// NewWebApiControllerWalletControllerCreateWalletItemRequestWithBody generates requests for WebApiControllerWalletControllerCreateWalletItem with any type of body
+func NewWebApiControllerWalletControllerCreateWalletItemRequestWithBody(server string, tenant string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenant", runtime.ParamLocationPath, tenant)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/wallet/items/issued/%s/create", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewWebApiControllerWalletControllerReadWalletItemRequest generates requests for WebApiControllerWalletControllerReadWalletItem
+func NewWebApiControllerWalletControllerReadWalletItemRequest(server string, tenant string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenant", runtime.ParamLocationPath, tenant)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/wallet/items/issued/%s/read/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewWebApiControllerWalletControllerDeleteWalletItemRequest generates requests for WebApiControllerWalletControllerDeleteWalletItem
+func NewWebApiControllerWalletControllerDeleteWalletItemRequest(server string, tenant string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenant", runtime.ParamLocationPath, tenant)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/wallet/items/issued/%s/revoke/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -1508,6 +2880,16 @@ type ClientWithResponsesInterface interface {
 	// WebApiControllerAccountsControllerGetBasicInfoWithResponse request
 	WebApiControllerAccountsControllerGetBasicInfoWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*WebApiControllerAccountsControllerGetBasicInfoResponse, error)
 
+	// WebApiControllerAddressControllerParseAddressWithBodyWithResponse request with any body
+	WebApiControllerAddressControllerParseAddressWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerAddressControllerParseAddressResponse, error)
+
+	WebApiControllerAddressControllerParseAddressWithResponse(ctx context.Context, body WebApiControllerAddressControllerParseAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerAddressControllerParseAddressResponse, error)
+
+	// WebApiControllerAddressControllerParseAndExpandAddressWithBodyWithResponse request with any body
+	WebApiControllerAddressControllerParseAndExpandAddressWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerAddressControllerParseAndExpandAddressResponse, error)
+
+	WebApiControllerAddressControllerParseAndExpandAddressWithResponse(ctx context.Context, body WebApiControllerAddressControllerParseAndExpandAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerAddressControllerParseAndExpandAddressResponse, error)
+
 	// WebApiControllerAuthControllerCreateWithBodyWithResponse request with any body
 	WebApiControllerAuthControllerCreateWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerAuthControllerCreateResponse, error)
 
@@ -1518,6 +2900,20 @@ type ClientWithResponsesInterface interface {
 
 	WebApiControllerAuthControllerRevokeWithResponse(ctx context.Context, body WebApiControllerAuthControllerRevokeJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerAuthControllerRevokeResponse, error)
 
+	// WebApiControllerContentControllerUploadCoverLetterWithBodyWithResponse request with any body
+	WebApiControllerContentControllerUploadCoverLetterWithBodyWithResponse(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerUploadCoverLetterResponse, error)
+
+	WebApiControllerContentControllerUploadCoverLetterWithResponse(ctx context.Context, tenant string, body WebApiControllerContentControllerUploadCoverLetterJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerUploadCoverLetterResponse, error)
+
+	// WebApiControllerContentControllerDeleteCoverLetterWithResponse request
+	WebApiControllerContentControllerDeleteCoverLetterWithResponse(ctx context.Context, tenant string, name string, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerDeleteCoverLetterResponse, error)
+
+	// WebApiControllerContentControllerGetCoverLettersListWithResponse request
+	WebApiControllerContentControllerGetCoverLettersListWithResponse(ctx context.Context, tenant string, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerGetCoverLettersListResponse, error)
+
+	// WebApiControllerContentControllerGetCoverLetterWithResponse request
+	WebApiControllerContentControllerGetCoverLetterWithResponse(ctx context.Context, tenant string, pType string, fileName string, format WebApiControllerContentControllerGetCoverLetterParamsFormat, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerGetCoverLetterResponse, error)
+
 	// WebApiControllerContentControllerGetWithResponse request
 	WebApiControllerContentControllerGetWithResponse(ctx context.Context, id string, params *WebApiControllerContentControllerGetParams, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerGetResponse, error)
 
@@ -1527,10 +2923,23 @@ type ClientWithResponsesInterface interface {
 	// WebApiControllerContentControllerGetDeliveryCertificateWithResponse request
 	WebApiControllerContentControllerGetDeliveryCertificateWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerGetDeliveryCertificateResponse, error)
 
+	// WebApiControllerContentControllerGetDeliveryStatusWithResponse request
+	WebApiControllerContentControllerGetDeliveryStatusWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerGetDeliveryStatusResponse, error)
+
+	// WebApiControllerContentControllerPreviewPaperMailWithBodyWithResponse request with any body
+	WebApiControllerContentControllerPreviewPaperMailWithBodyWithResponse(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerPreviewPaperMailResponse, error)
+
+	WebApiControllerContentControllerPreviewPaperMailWithResponse(ctx context.Context, tenant string, body WebApiControllerContentControllerPreviewPaperMailJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerPreviewPaperMailResponse, error)
+
 	// WebApiControllerContentControllerCheckReceiverWithBodyWithResponse request with any body
 	WebApiControllerContentControllerCheckReceiverWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerCheckReceiverResponse, error)
 
 	WebApiControllerContentControllerCheckReceiverWithResponse(ctx context.Context, body WebApiControllerContentControllerCheckReceiverJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerCheckReceiverResponse, error)
+
+	// WebApiControllerContentControllerCheckReceiverBulkWithBodyWithResponse request with any body
+	WebApiControllerContentControllerCheckReceiverBulkWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerCheckReceiverBulkResponse, error)
+
+	WebApiControllerContentControllerCheckReceiverBulkWithResponse(ctx context.Context, body WebApiControllerContentControllerCheckReceiverBulkJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerCheckReceiverBulkResponse, error)
 
 	// WebApiControllerContentControllerSendWithBodyWithResponse request with any body
 	WebApiControllerContentControllerSendWithBodyWithResponse(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerSendResponse, error)
@@ -1555,11 +2964,25 @@ type ClientWithResponsesInterface interface {
 
 	WebApiControllerSignatureControllerCreateSignatureReferenceWithResponse(ctx context.Context, tenantId string, body WebApiControllerSignatureControllerCreateSignatureReferenceJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerSignatureControllerCreateSignatureReferenceResponse, error)
 
+	// WebApiControllerStatusControllerGetStatusWithResponse request
+	WebApiControllerStatusControllerGetStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*WebApiControllerStatusControllerGetStatusResponse, error)
+
 	// WebApiControllerTenantControllerGetTenantWithResponse request
 	WebApiControllerTenantControllerGetTenantWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*WebApiControllerTenantControllerGetTenantResponse, error)
 
 	// WebApiControllerTenantControllerGetOwnWithResponse request
 	WebApiControllerTenantControllerGetOwnWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*WebApiControllerTenantControllerGetOwnResponse, error)
+
+	// WebApiControllerWalletControllerCreateWalletItemWithBodyWithResponse request with any body
+	WebApiControllerWalletControllerCreateWalletItemWithBodyWithResponse(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerWalletControllerCreateWalletItemResponse, error)
+
+	WebApiControllerWalletControllerCreateWalletItemWithResponse(ctx context.Context, tenant string, body WebApiControllerWalletControllerCreateWalletItemJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerWalletControllerCreateWalletItemResponse, error)
+
+	// WebApiControllerWalletControllerReadWalletItemWithResponse request
+	WebApiControllerWalletControllerReadWalletItemWithResponse(ctx context.Context, tenant string, id string, reqEditors ...RequestEditorFn) (*WebApiControllerWalletControllerReadWalletItemResponse, error)
+
+	// WebApiControllerWalletControllerDeleteWalletItemWithResponse request
+	WebApiControllerWalletControllerDeleteWalletItemWithResponse(ctx context.Context, tenant string, id string, reqEditors ...RequestEditorFn) (*WebApiControllerWalletControllerDeleteWalletItemResponse, error)
 }
 
 type WebApiControllerAccountsControllerGetBasicInfoResponse struct {
@@ -1578,6 +3001,50 @@ func (r WebApiControllerAccountsControllerGetBasicInfoResponse) Status() string 
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r WebApiControllerAccountsControllerGetBasicInfoResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerAddressControllerParseAddressResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ParseAddressResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerAddressControllerParseAddressResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerAddressControllerParseAddressResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerAddressControllerParseAndExpandAddressResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ParseAddressArrayResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerAddressControllerParseAndExpandAddressResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerAddressControllerParseAndExpandAddressResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1622,6 +3089,141 @@ func (r WebApiControllerAuthControllerRevokeResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r WebApiControllerAuthControllerRevokeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerContentControllerUploadCoverLetterResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *UpdateCoverLetterResponse
+	JSON400      *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+	JSON401 *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+	JSON500 *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerContentControllerUploadCoverLetterResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerContentControllerUploadCoverLetterResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerContentControllerDeleteCoverLetterResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		// Status Status of the deletion operation.
+		Status *string `json:"status,omitempty"`
+	}
+	JSON401 *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+	JSON404 *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+	JSON500 *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerContentControllerDeleteCoverLetterResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerContentControllerDeleteCoverLetterResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerContentControllerGetCoverLettersListResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CoverLettersOverviewResponse
+	JSON401      *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerContentControllerGetCoverLettersListResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerContentControllerGetCoverLettersListResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerContentControllerGetCoverLetterResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON401      *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+	JSON404 *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerContentControllerGetCoverLetterResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerContentControllerGetCoverLetterResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1709,6 +3311,74 @@ func (r WebApiControllerContentControllerGetDeliveryCertificateResponse) StatusC
 	return 0
 }
 
+type WebApiControllerContentControllerGetDeliveryStatusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ContentGetDeliveryStatusResponse
+	JSON404      *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerContentControllerGetDeliveryStatusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerContentControllerGetDeliveryStatusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerContentControllerPreviewPaperMailResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+	JSON401 *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+	JSON404 *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+	JSON422 *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerContentControllerPreviewPaperMailResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerContentControllerPreviewPaperMailResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type WebApiControllerContentControllerCheckReceiverResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -1730,6 +3400,33 @@ func (r WebApiControllerContentControllerCheckReceiverResponse) Status() string 
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r WebApiControllerContentControllerCheckReceiverResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerContentControllerCheckReceiverBulkResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ReceiverBulkExistResponse
+	JSON404      *struct {
+		Code    *float32 `json:"code,omitempty"`
+		Message *string  `json:"message,omitempty"`
+		Status  *float32 `json:"status,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerContentControllerCheckReceiverBulkResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerContentControllerCheckReceiverBulkResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1860,6 +3557,28 @@ func (r WebApiControllerSignatureControllerCreateSignatureReferenceResponse) Sta
 	return 0
 }
 
+type WebApiControllerStatusControllerGetStatusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *StatusResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerStatusControllerGetStatusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerStatusControllerGetStatusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type WebApiControllerTenantControllerGetTenantResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -1904,6 +3623,75 @@ func (r WebApiControllerTenantControllerGetOwnResponse) StatusCode() int {
 	return 0
 }
 
+type WebApiControllerWalletControllerCreateWalletItemResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *WalletMetaResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerWalletControllerCreateWalletItemResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerWalletControllerCreateWalletItemResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerWalletControllerReadWalletItemResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *WalletItemResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerWalletControllerReadWalletItemResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerWalletControllerReadWalletItemResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type WebApiControllerWalletControllerDeleteWalletItemResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		// Status The status of the deletion
+		Status *string `json:"status,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r WebApiControllerWalletControllerDeleteWalletItemResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r WebApiControllerWalletControllerDeleteWalletItemResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // WebApiControllerAccountsControllerGetBasicInfoWithResponse request returning *WebApiControllerAccountsControllerGetBasicInfoResponse
 func (c *ClientWithResponses) WebApiControllerAccountsControllerGetBasicInfoWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*WebApiControllerAccountsControllerGetBasicInfoResponse, error) {
 	rsp, err := c.WebApiControllerAccountsControllerGetBasicInfo(ctx, id, reqEditors...)
@@ -1911,6 +3699,40 @@ func (c *ClientWithResponses) WebApiControllerAccountsControllerGetBasicInfoWith
 		return nil, err
 	}
 	return ParseWebApiControllerAccountsControllerGetBasicInfoResponse(rsp)
+}
+
+// WebApiControllerAddressControllerParseAddressWithBodyWithResponse request with arbitrary body returning *WebApiControllerAddressControllerParseAddressResponse
+func (c *ClientWithResponses) WebApiControllerAddressControllerParseAddressWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerAddressControllerParseAddressResponse, error) {
+	rsp, err := c.WebApiControllerAddressControllerParseAddressWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerAddressControllerParseAddressResponse(rsp)
+}
+
+func (c *ClientWithResponses) WebApiControllerAddressControllerParseAddressWithResponse(ctx context.Context, body WebApiControllerAddressControllerParseAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerAddressControllerParseAddressResponse, error) {
+	rsp, err := c.WebApiControllerAddressControllerParseAddress(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerAddressControllerParseAddressResponse(rsp)
+}
+
+// WebApiControllerAddressControllerParseAndExpandAddressWithBodyWithResponse request with arbitrary body returning *WebApiControllerAddressControllerParseAndExpandAddressResponse
+func (c *ClientWithResponses) WebApiControllerAddressControllerParseAndExpandAddressWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerAddressControllerParseAndExpandAddressResponse, error) {
+	rsp, err := c.WebApiControllerAddressControllerParseAndExpandAddressWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerAddressControllerParseAndExpandAddressResponse(rsp)
+}
+
+func (c *ClientWithResponses) WebApiControllerAddressControllerParseAndExpandAddressWithResponse(ctx context.Context, body WebApiControllerAddressControllerParseAndExpandAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerAddressControllerParseAndExpandAddressResponse, error) {
+	rsp, err := c.WebApiControllerAddressControllerParseAndExpandAddress(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerAddressControllerParseAndExpandAddressResponse(rsp)
 }
 
 // WebApiControllerAuthControllerCreateWithBodyWithResponse request with arbitrary body returning *WebApiControllerAuthControllerCreateResponse
@@ -1947,6 +3769,50 @@ func (c *ClientWithResponses) WebApiControllerAuthControllerRevokeWithResponse(c
 	return ParseWebApiControllerAuthControllerRevokeResponse(rsp)
 }
 
+// WebApiControllerContentControllerUploadCoverLetterWithBodyWithResponse request with arbitrary body returning *WebApiControllerContentControllerUploadCoverLetterResponse
+func (c *ClientWithResponses) WebApiControllerContentControllerUploadCoverLetterWithBodyWithResponse(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerUploadCoverLetterResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerUploadCoverLetterWithBody(ctx, tenant, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerUploadCoverLetterResponse(rsp)
+}
+
+func (c *ClientWithResponses) WebApiControllerContentControllerUploadCoverLetterWithResponse(ctx context.Context, tenant string, body WebApiControllerContentControllerUploadCoverLetterJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerUploadCoverLetterResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerUploadCoverLetter(ctx, tenant, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerUploadCoverLetterResponse(rsp)
+}
+
+// WebApiControllerContentControllerDeleteCoverLetterWithResponse request returning *WebApiControllerContentControllerDeleteCoverLetterResponse
+func (c *ClientWithResponses) WebApiControllerContentControllerDeleteCoverLetterWithResponse(ctx context.Context, tenant string, name string, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerDeleteCoverLetterResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerDeleteCoverLetter(ctx, tenant, name, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerDeleteCoverLetterResponse(rsp)
+}
+
+// WebApiControllerContentControllerGetCoverLettersListWithResponse request returning *WebApiControllerContentControllerGetCoverLettersListResponse
+func (c *ClientWithResponses) WebApiControllerContentControllerGetCoverLettersListWithResponse(ctx context.Context, tenant string, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerGetCoverLettersListResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerGetCoverLettersList(ctx, tenant, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerGetCoverLettersListResponse(rsp)
+}
+
+// WebApiControllerContentControllerGetCoverLetterWithResponse request returning *WebApiControllerContentControllerGetCoverLetterResponse
+func (c *ClientWithResponses) WebApiControllerContentControllerGetCoverLetterWithResponse(ctx context.Context, tenant string, pType string, fileName string, format WebApiControllerContentControllerGetCoverLetterParamsFormat, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerGetCoverLetterResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerGetCoverLetter(ctx, tenant, pType, fileName, format, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerGetCoverLetterResponse(rsp)
+}
+
 // WebApiControllerContentControllerGetWithResponse request returning *WebApiControllerContentControllerGetResponse
 func (c *ClientWithResponses) WebApiControllerContentControllerGetWithResponse(ctx context.Context, id string, params *WebApiControllerContentControllerGetParams, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerGetResponse, error) {
 	rsp, err := c.WebApiControllerContentControllerGet(ctx, id, params, reqEditors...)
@@ -1974,6 +3840,32 @@ func (c *ClientWithResponses) WebApiControllerContentControllerGetDeliveryCertif
 	return ParseWebApiControllerContentControllerGetDeliveryCertificateResponse(rsp)
 }
 
+// WebApiControllerContentControllerGetDeliveryStatusWithResponse request returning *WebApiControllerContentControllerGetDeliveryStatusResponse
+func (c *ClientWithResponses) WebApiControllerContentControllerGetDeliveryStatusWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerGetDeliveryStatusResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerGetDeliveryStatus(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerGetDeliveryStatusResponse(rsp)
+}
+
+// WebApiControllerContentControllerPreviewPaperMailWithBodyWithResponse request with arbitrary body returning *WebApiControllerContentControllerPreviewPaperMailResponse
+func (c *ClientWithResponses) WebApiControllerContentControllerPreviewPaperMailWithBodyWithResponse(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerPreviewPaperMailResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerPreviewPaperMailWithBody(ctx, tenant, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerPreviewPaperMailResponse(rsp)
+}
+
+func (c *ClientWithResponses) WebApiControllerContentControllerPreviewPaperMailWithResponse(ctx context.Context, tenant string, body WebApiControllerContentControllerPreviewPaperMailJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerPreviewPaperMailResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerPreviewPaperMail(ctx, tenant, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerPreviewPaperMailResponse(rsp)
+}
+
 // WebApiControllerContentControllerCheckReceiverWithBodyWithResponse request with arbitrary body returning *WebApiControllerContentControllerCheckReceiverResponse
 func (c *ClientWithResponses) WebApiControllerContentControllerCheckReceiverWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerCheckReceiverResponse, error) {
 	rsp, err := c.WebApiControllerContentControllerCheckReceiverWithBody(ctx, contentType, body, reqEditors...)
@@ -1989,6 +3881,23 @@ func (c *ClientWithResponses) WebApiControllerContentControllerCheckReceiverWith
 		return nil, err
 	}
 	return ParseWebApiControllerContentControllerCheckReceiverResponse(rsp)
+}
+
+// WebApiControllerContentControllerCheckReceiverBulkWithBodyWithResponse request with arbitrary body returning *WebApiControllerContentControllerCheckReceiverBulkResponse
+func (c *ClientWithResponses) WebApiControllerContentControllerCheckReceiverBulkWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerCheckReceiverBulkResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerCheckReceiverBulkWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerCheckReceiverBulkResponse(rsp)
+}
+
+func (c *ClientWithResponses) WebApiControllerContentControllerCheckReceiverBulkWithResponse(ctx context.Context, body WebApiControllerContentControllerCheckReceiverBulkJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerContentControllerCheckReceiverBulkResponse, error) {
+	rsp, err := c.WebApiControllerContentControllerCheckReceiverBulk(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerContentControllerCheckReceiverBulkResponse(rsp)
 }
 
 // WebApiControllerContentControllerSendWithBodyWithResponse request with arbitrary body returning *WebApiControllerContentControllerSendResponse
@@ -2068,6 +3977,15 @@ func (c *ClientWithResponses) WebApiControllerSignatureControllerCreateSignature
 	return ParseWebApiControllerSignatureControllerCreateSignatureReferenceResponse(rsp)
 }
 
+// WebApiControllerStatusControllerGetStatusWithResponse request returning *WebApiControllerStatusControllerGetStatusResponse
+func (c *ClientWithResponses) WebApiControllerStatusControllerGetStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*WebApiControllerStatusControllerGetStatusResponse, error) {
+	rsp, err := c.WebApiControllerStatusControllerGetStatus(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerStatusControllerGetStatusResponse(rsp)
+}
+
 // WebApiControllerTenantControllerGetTenantWithResponse request returning *WebApiControllerTenantControllerGetTenantResponse
 func (c *ClientWithResponses) WebApiControllerTenantControllerGetTenantWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*WebApiControllerTenantControllerGetTenantResponse, error) {
 	rsp, err := c.WebApiControllerTenantControllerGetTenant(ctx, id, reqEditors...)
@@ -2086,6 +4004,41 @@ func (c *ClientWithResponses) WebApiControllerTenantControllerGetOwnWithResponse
 	return ParseWebApiControllerTenantControllerGetOwnResponse(rsp)
 }
 
+// WebApiControllerWalletControllerCreateWalletItemWithBodyWithResponse request with arbitrary body returning *WebApiControllerWalletControllerCreateWalletItemResponse
+func (c *ClientWithResponses) WebApiControllerWalletControllerCreateWalletItemWithBodyWithResponse(ctx context.Context, tenant string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*WebApiControllerWalletControllerCreateWalletItemResponse, error) {
+	rsp, err := c.WebApiControllerWalletControllerCreateWalletItemWithBody(ctx, tenant, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerWalletControllerCreateWalletItemResponse(rsp)
+}
+
+func (c *ClientWithResponses) WebApiControllerWalletControllerCreateWalletItemWithResponse(ctx context.Context, tenant string, body WebApiControllerWalletControllerCreateWalletItemJSONRequestBody, reqEditors ...RequestEditorFn) (*WebApiControllerWalletControllerCreateWalletItemResponse, error) {
+	rsp, err := c.WebApiControllerWalletControllerCreateWalletItem(ctx, tenant, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerWalletControllerCreateWalletItemResponse(rsp)
+}
+
+// WebApiControllerWalletControllerReadWalletItemWithResponse request returning *WebApiControllerWalletControllerReadWalletItemResponse
+func (c *ClientWithResponses) WebApiControllerWalletControllerReadWalletItemWithResponse(ctx context.Context, tenant string, id string, reqEditors ...RequestEditorFn) (*WebApiControllerWalletControllerReadWalletItemResponse, error) {
+	rsp, err := c.WebApiControllerWalletControllerReadWalletItem(ctx, tenant, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerWalletControllerReadWalletItemResponse(rsp)
+}
+
+// WebApiControllerWalletControllerDeleteWalletItemWithResponse request returning *WebApiControllerWalletControllerDeleteWalletItemResponse
+func (c *ClientWithResponses) WebApiControllerWalletControllerDeleteWalletItemWithResponse(ctx context.Context, tenant string, id string, reqEditors ...RequestEditorFn) (*WebApiControllerWalletControllerDeleteWalletItemResponse, error) {
+	rsp, err := c.WebApiControllerWalletControllerDeleteWalletItem(ctx, tenant, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseWebApiControllerWalletControllerDeleteWalletItemResponse(rsp)
+}
+
 // ParseWebApiControllerAccountsControllerGetBasicInfoResponse parses an HTTP response from a WebApiControllerAccountsControllerGetBasicInfoWithResponse call
 func ParseWebApiControllerAccountsControllerGetBasicInfoResponse(rsp *http.Response) (*WebApiControllerAccountsControllerGetBasicInfoResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -2102,6 +4055,58 @@ func ParseWebApiControllerAccountsControllerGetBasicInfoResponse(rsp *http.Respo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest BasicAccountInfoResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerAddressControllerParseAddressResponse parses an HTTP response from a WebApiControllerAddressControllerParseAddressWithResponse call
+func ParseWebApiControllerAddressControllerParseAddressResponse(rsp *http.Response) (*WebApiControllerAddressControllerParseAddressResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerAddressControllerParseAddressResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ParseAddressResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerAddressControllerParseAndExpandAddressResponse parses an HTTP response from a WebApiControllerAddressControllerParseAndExpandAddressWithResponse call
+func ParseWebApiControllerAddressControllerParseAndExpandAddressResponse(rsp *http.Response) (*WebApiControllerAddressControllerParseAndExpandAddressResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerAddressControllerParseAndExpandAddressResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ParseAddressArrayResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -2156,6 +4161,205 @@ func ParseWebApiControllerAuthControllerRevokeResponse(rsp *http.Response) (*Web
 	response := &WebApiControllerAuthControllerRevokeResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerContentControllerUploadCoverLetterResponse parses an HTTP response from a WebApiControllerContentControllerUploadCoverLetterWithResponse call
+func ParseWebApiControllerContentControllerUploadCoverLetterResponse(rsp *http.Response) (*WebApiControllerContentControllerUploadCoverLetterResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerContentControllerUploadCoverLetterResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest UpdateCoverLetterResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerContentControllerDeleteCoverLetterResponse parses an HTTP response from a WebApiControllerContentControllerDeleteCoverLetterWithResponse call
+func ParseWebApiControllerContentControllerDeleteCoverLetterResponse(rsp *http.Response) (*WebApiControllerContentControllerDeleteCoverLetterResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerContentControllerDeleteCoverLetterResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			// Status Status of the deletion operation.
+			Status *string `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerContentControllerGetCoverLettersListResponse parses an HTTP response from a WebApiControllerContentControllerGetCoverLettersListWithResponse call
+func ParseWebApiControllerContentControllerGetCoverLettersListResponse(rsp *http.Response) (*WebApiControllerContentControllerGetCoverLettersListResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerContentControllerGetCoverLettersListResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CoverLettersOverviewResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerContentControllerGetCoverLetterResponse parses an HTTP response from a WebApiControllerContentControllerGetCoverLetterWithResponse call
+func ParseWebApiControllerContentControllerGetCoverLetterResponse(rsp *http.Response) (*WebApiControllerContentControllerGetCoverLetterResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerContentControllerGetCoverLetterResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	}
 
 	return response, nil
@@ -2272,6 +4476,106 @@ func ParseWebApiControllerContentControllerGetDeliveryCertificateResponse(rsp *h
 	return response, nil
 }
 
+// ParseWebApiControllerContentControllerGetDeliveryStatusResponse parses an HTTP response from a WebApiControllerContentControllerGetDeliveryStatusWithResponse call
+func ParseWebApiControllerContentControllerGetDeliveryStatusResponse(rsp *http.Response) (*WebApiControllerContentControllerGetDeliveryStatusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerContentControllerGetDeliveryStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ContentGetDeliveryStatusResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerContentControllerPreviewPaperMailResponse parses an HTTP response from a WebApiControllerContentControllerPreviewPaperMailWithResponse call
+func ParseWebApiControllerContentControllerPreviewPaperMailResponse(rsp *http.Response) (*WebApiControllerContentControllerPreviewPaperMailResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerContentControllerPreviewPaperMailResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseWebApiControllerContentControllerCheckReceiverResponse parses an HTTP response from a WebApiControllerContentControllerCheckReceiverWithResponse call
 func ParseWebApiControllerContentControllerCheckReceiverResponse(rsp *http.Response) (*WebApiControllerContentControllerCheckReceiverResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -2288,6 +4592,43 @@ func ParseWebApiControllerContentControllerCheckReceiverResponse(rsp *http.Respo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest ReceiverExistResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Code    *float32 `json:"code,omitempty"`
+			Message *string  `json:"message,omitempty"`
+			Status  *float32 `json:"status,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerContentControllerCheckReceiverBulkResponse parses an HTTP response from a WebApiControllerContentControllerCheckReceiverBulkWithResponse call
+func ParseWebApiControllerContentControllerCheckReceiverBulkResponse(rsp *http.Response) (*WebApiControllerContentControllerCheckReceiverBulkResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerContentControllerCheckReceiverBulkResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ReceiverBulkExistResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -2462,6 +4803,32 @@ func ParseWebApiControllerSignatureControllerCreateSignatureReferenceResponse(rs
 	return response, nil
 }
 
+// ParseWebApiControllerStatusControllerGetStatusResponse parses an HTTP response from a WebApiControllerStatusControllerGetStatusWithResponse call
+func ParseWebApiControllerStatusControllerGetStatusResponse(rsp *http.Response) (*WebApiControllerStatusControllerGetStatusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerStatusControllerGetStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest StatusResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseWebApiControllerTenantControllerGetTenantResponse parses an HTTP response from a WebApiControllerTenantControllerGetTenantWithResponse call
 func ParseWebApiControllerTenantControllerGetTenantResponse(rsp *http.Response) (*WebApiControllerTenantControllerGetTenantResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -2504,6 +4871,87 @@ func ParseWebApiControllerTenantControllerGetOwnResponse(rsp *http.Response) (*W
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest TenantListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerWalletControllerCreateWalletItemResponse parses an HTTP response from a WebApiControllerWalletControllerCreateWalletItemWithResponse call
+func ParseWebApiControllerWalletControllerCreateWalletItemResponse(rsp *http.Response) (*WebApiControllerWalletControllerCreateWalletItemResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerWalletControllerCreateWalletItemResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest WalletMetaResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerWalletControllerReadWalletItemResponse parses an HTTP response from a WebApiControllerWalletControllerReadWalletItemWithResponse call
+func ParseWebApiControllerWalletControllerReadWalletItemResponse(rsp *http.Response) (*WebApiControllerWalletControllerReadWalletItemResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerWalletControllerReadWalletItemResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest WalletItemResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseWebApiControllerWalletControllerDeleteWalletItemResponse parses an HTTP response from a WebApiControllerWalletControllerDeleteWalletItemWithResponse call
+func ParseWebApiControllerWalletControllerDeleteWalletItemResponse(rsp *http.Response) (*WebApiControllerWalletControllerDeleteWalletItemResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &WebApiControllerWalletControllerDeleteWalletItemResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			// Status The status of the deletion
+			Status *string `json:"status,omitempty"`
+		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

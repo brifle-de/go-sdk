@@ -181,6 +181,75 @@ func TestSendContent(t *testing.T) {
 
 }
 
+func TestDeliveryPaperMail(t *testing.T) {
+	brifleClient := getClient(t)
+
+	firstName := os.Getenv("TEST_RECEIVER_FIRST_NAME") + " Paper"
+	lastName := os.Getenv("TEST_RECEIVER_LAST_NAME") + " Paper"
+	dateOfBirth := os.Getenv("TEST_RECEIVER_DATE_OF_BIRTH")
+	placeOfBirth := os.Getenv("TEST_RECEIVER_PLACE_OF_BIRTH")
+	pathToFile := "./test/welcome.pdf"
+	tenant := os.Getenv("TEST_TENANT")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	// read file content
+	fileContent, err := os.ReadFile(pathToFile)
+	if err != nil {
+		t.Errorf("Failed to read file: %v", err)
+		return
+	}
+	// convert file content to base64
+	fileContentBase64 := sdk.Base64Encode(fileContent)
+
+	document1 := content.ContentItem{
+		Content: fileContentBase64,
+		Type:    sdk.String("application/pdf"),
+	}
+
+	req := content.SendContentRequest{
+		To: &content.ReceiverData{
+			BirthInformation: &content.BirthInformationReceiver{
+				FirstName:    &firstName,
+				LastName:     &lastName,
+				DateOfBirth:  &dateOfBirth,
+				PlaceOfBirth: &placeOfBirth,
+			},
+		},
+		Fallback: &content.Fallback{
+			EnabledPhysicalDelivery: true,
+			PaperMail: &content.PaperMail{
+				Recipient: &content.Recipient{
+					AddressLine1: sdk.String("Test Street 1"),
+					AddressLine2: sdk.String("Test Street 2"),
+					AddressLine3: sdk.String("Test Street 3"),
+					City:         sdk.String("Test City"),
+					Country:      sdk.String("DE"),
+					PostalCode:   sdk.String("12345"),
+				},
+			},
+		},
+		Type:    sdk.String(content.Letter),
+		Body:    &[]content.ContentItem{document1},
+		Subject: sdk.String("Welcome to Brifle from Go!"),
+	}
+
+	res, status, err := content.SendContent(brifleClient, ctx, &tenant, &req)
+	if err != nil {
+		t.Errorf("SendContent failed: %v", err)
+		return
+	}
+	if status.HttpStatus != 200 {
+		t.Errorf("Expected status code 200, got %d", status.HttpStatus)
+		return
+	}
+	if res == nil {
+		t.Error("SendContent response is nil")
+		return
+	}
+}
+
 func TestGetDocument(t *testing.T) {
 	brifleClient := getClient(t)
 
